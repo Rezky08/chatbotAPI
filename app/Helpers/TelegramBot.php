@@ -19,14 +19,12 @@ class TelegramBot
 
     public function connectWebhook($webhook)
     {
-        dd(env('APP_NAME'));
         $url = env('TELEGRAM_API') . $this->bot_token . "/setWebhook?url=" . $webhook;
-        $res = $this->client->get($url);
         try {
-            dd($res);
+            $res = $this->client->get($url);
+            return true;
         } catch (Exception $e) {
             Log::error($e->getMessage());
-            dd($e->getMessage(), $e->getCode());
             return false;
         }
     }
