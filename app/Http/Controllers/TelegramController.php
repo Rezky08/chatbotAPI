@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Breadcrumb;
+use App\Helpers\TelegramBot;
 use App\Models\Telegram;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,8 @@ class TelegramController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        dd((new TelegramBot("1231725805:AAGNfddJG9WEEKhxgG5iSn6arrOq0m6qJ0c"))->connectWebhook("https://cupbot1.herokuapp.com/getChat"));
+        // dd($request->all());
     }
 
     /**
