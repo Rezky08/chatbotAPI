@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Breadcrumb;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
@@ -17,8 +19,10 @@ class ApplicationKeyController extends Controller
     private $client_model;
     private $title;
     private $client_repo;
-    function __construct(ClientRepository $client_repo)
+    private $breadcrumbs;
+    function __construct(ClientRepository $client_repo, Request $request)
     {
+        $this->breadcrumbs = (new Breadcrumb)->get($request->path());
         $this->client_repo = $client_repo;
         $this->title = "Application Key";
         $this->user_model = new User();
@@ -29,12 +33,13 @@ class ApplicationKeyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $data = [
             'title' => $this->title,
-            'apps' => $user->client()->active()->get()
+            'apps' => $user->client()->active()->get(),
+            'breadcrumbs' => $this->breadcrumbs
         ];
         return view('app_key.app_key_list', $data);
     }
@@ -47,7 +52,9 @@ class ApplicationKeyController extends Controller
     public function create()
     {
         $data = [
-            'title' => $this->title
+            'title' => $this->title,
+            'breadcrumbs' => $this->breadcrumbs
+
         ];
         return view('app_key.app_key_form', $data);
     }
@@ -93,9 +100,8 @@ class ApplicationKeyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
     }
 
     /**

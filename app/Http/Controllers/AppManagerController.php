@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Breadcrumb;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AppManagerController extends Controller
 {
+    private $breadcrumbs;
+    function __construct(Request $request)
+    {
+        $this->breadcrumbs = (new Breadcrumb)->get($request->path());
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +21,8 @@ class AppManagerController extends Controller
     public function index()
     {
         $data = [
-            'title' => 'Dashboard'
+            'title' => 'Dashboard',
+            'breadcrumbs' => $this->breadcrumbs
         ];
         return view('dashboard', $data);
     }
