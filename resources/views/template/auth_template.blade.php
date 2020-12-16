@@ -19,9 +19,9 @@
                     <span class="has-text-rubik is-size-3 has-text-weight-bold">{{$title}}</span>
                     <nav class="breadcrumb">
                         <ul>
-                            <li><a href="{{ url('/') }}">{{$title}}</a></li>
-                            <li><a href="#">test</a></li>
-                            <li><a href="#">test</a></li>
+                            @foreach ($breadcrumbs as $item)
+                            <li><a href="{{ $item['path'] }}">{{$item['name']}}</a></li>
+                            @endforeach
                         </ul>
                     </nav>
                 </div>
