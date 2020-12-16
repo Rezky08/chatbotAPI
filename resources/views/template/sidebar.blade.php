@@ -16,7 +16,7 @@
             </span>
             Application Key
         </a></li>
-        <li><a href="{{ url('/') }}">
+        <li><a href="{{ url('/telegram') }}">
             <span class="icon has-text-info">
                 <i class="fab fa-telegram"></i>
             </span>
