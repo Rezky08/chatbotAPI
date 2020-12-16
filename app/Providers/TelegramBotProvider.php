@@ -15,7 +15,7 @@ class TelegramBotProvider extends ServiceProvider
      */
     public function register()
     {
-        require_once app_path() . 'Helpers/TelegramBot.php';
+        require_once app_path() . '\Helpers\TelegramBot.php';
     }
 
     /**
