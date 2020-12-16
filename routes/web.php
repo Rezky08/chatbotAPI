@@ -36,6 +36,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('/{id}', 'ApplicationKeyController@destroy');
         Route::get('/add', 'ApplicationKeyController@create');
         Route::post('/add', 'ApplicationKeyController@store');
+        Route::get('/a/b/c/d', 'ApplicationKeyController@show');
+    });
+    Route::group(['prefix' => 'telegram'], function () {
+        Route::get('/', 'TelegramController@index');
+        Route::post('/', 'TelegramController@store');
     });
 });
 
