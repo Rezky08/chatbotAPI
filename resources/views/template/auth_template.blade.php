@@ -2,7 +2,7 @@
 @include('template.navbar')
 @include('template.sidebar')
 
-@section('title',$title)
+@section('title', $title)
 
 
 @section('content')
@@ -19,9 +19,8 @@
                 <span class="has-text-rubik is-size-3 has-text-weight-bold">{{ $title }}</span>
                 <nav class="breadcrumb">
                     <ul>
-                        @foreach($breadcrumbs as $item)
-                            <li><a
-                                    href="{{ $item['path'] }}">{{ $item['name'] }}</a>
+                        @foreach ($breadcrumbs as $item)
+                            <li><a href="{{ $item['path'] }}">{{ $item['name'] }}</a>
                             </li>
                         @endforeach
                     </ul>

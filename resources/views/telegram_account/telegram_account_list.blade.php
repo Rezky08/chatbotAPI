@@ -14,25 +14,20 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Bot Name</th>
+                        <th>Name</th>
                         <th>Username</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($telegrams as $key => $telegram)
+                    @foreach ($accounts as $key => $account)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $telegram->name }}</td>
-                            <td>{{ $telegram->username }}</td>
+                            <td>{{ $account->name }}</td>
+                            <td>{{ $account->username }}</td>
                             <td>
-                                <form action="{{ url('telegram/' . $telegram->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="button border-0" data-tooltip="Disconnect webhook">
-                                        <span class="icon is-small has-text-danger"><i class="fa fa-trash"></i></span>
-                                    </button>
-                                </form>
+                                <button class="button is-info"><span class="icon"> <i class="fa fa-comment"
+                                            aria-hidden="true"></i></span>Chat Log</button>
                             </td>
                         </tr>
                     @endforeach

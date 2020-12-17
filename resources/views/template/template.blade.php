@@ -22,13 +22,13 @@
 </head>
 
 <body>
-    @if(Session::has('error'))
+    @if (Session::has('error'))
         <div class="notification is-danger">
             <button class="delete"></button>
             {{ Session::get('error') }}
         </div>
     @endif
-    @if(Session::has('success'))
+    @if (Session::has('success'))
         <div class="notification is-success">
             <button class="delete"></button>
             {{ Session::get('success') }}
@@ -38,18 +38,18 @@
 
     @show
     @section('script')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-                var $notification = $delete.parentNode;
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                    var $notification = $delete.parentNode;
 
-                $delete.addEventListener('click', () => {
-                    $notification.parentNode.removeChild($notification);
+                    $delete.addEventListener('click', () => {
+                        $notification.parentNode.removeChild($notification);
+                    });
                 });
             });
-        });
 
-    </script>
+        </script>
     @show
 </body>
 
