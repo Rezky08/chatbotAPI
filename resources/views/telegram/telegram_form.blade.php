@@ -8,10 +8,11 @@
                 <div class="field">
                     <div class="control">
                         <label class="label">Application Name</label>
-                        <input type="text" name="app_name" class="input" value="{{old('app_name')}}">
+                        <input type="text" name="app_name" class="input"
+                            value="{{ old('app_name') }}">
                     </div>
                     @error('app_name')
-                    <span class="help is-danger">{{$message}}</span>
+                        <span class="help is-danger">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -19,10 +20,11 @@
                 <div class="field">
                     <div class="control">
                         <label class="label">Redirect</label>
-                        <input type="text" name="redirect" class="input" value="{{old('redirect')}}">
+                        <input type="text" name="redirect" class="input"
+                            value="{{ old('redirect') }}">
                     </div>
                     @error('redirect')
-                    <span class="help is-danger">{{$message}}</span>
+                        <span class="help is-danger">{{ $message }}</span>
                     @enderror
                 </div>
             </div>

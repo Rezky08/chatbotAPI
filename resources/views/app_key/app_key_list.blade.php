@@ -2,7 +2,8 @@
 @section('main')
 <div class="columns">
     <div class="column is-offset-half has-text-right">
-        <a href="{{ url('/app-key/add') }}" class="button is-primary"><span class="icon"><i class="fa fa-plus"></i></span><span>Add Application</span></a>
+        <a href="{{ url('/app-key/add') }}" class="button is-primary"><span class="icon"><i
+                    class="fa fa-plus"></i></span><span>Add Application</span></a>
     </div>
 </div>
 
@@ -21,13 +22,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($apps as $key=>$app)
+                @foreach($apps as $key=>$app)
                     <tr>
-                        <td>{{$key+1}}</td>
-                        <td>{{$app->name}}</td>
-                        <td><button class="button modal-button is-small is-info" secret-key="{{$app->secret}}" data-target="modal"> Show </button></td>
-                        <td>{{$app->redirect}}</td>
-                        <td>{{$app->created_at}}</td>
+                        <td>{{ $key+1 }}</td>
+                        <td>{{ $app->name }}</td>
+                        <td><button class="button modal-button is-small is-info" secret-key="{{ $app->secret }}"
+                                data-target="modal"> Show </button></td>
+                        <td>{{ $app->redirect }}</td>
+                        <td>{{ $app->created_at }}</td>
                         <td>
                             <form action="{{ url('app-key/'.$app->id) }}" method="POST">
                                 @csrf
@@ -59,7 +61,8 @@
                         <span id="secret-key"></span>
                     </div>
                     <div class="column has-text-right">
-                        <button class="button copy has-tooltip-left" data-tooltip="copy secret key"><span class="icon"><i class="fas fa-copy"></i></span></button>
+                        <button class="button copy has-tooltip-left" data-tooltip="copy secret key"><span
+                                class="icon"><i class="fas fa-copy"></i></span></button>
                     </div>
                 </div>
             </div>
@@ -70,42 +73,46 @@
 @endsection
 
 @section('script')
-    @parent
-    <script>
-        document.addEventListener('DOMContentLoaded',()=>{
-            let modal_toggler = document.querySelectorAll('.modal-button');
-            let modal_close = document.querySelector('.modal-close');
-            let modal_background = document.querySelector('.modal-close');
-            document.querySelector('.copy').addEventListener('click',()=>{
-                let secret_key = document.getElementById('secret-key').innerText
-                // Create new element
-                var el = document.createElement('textarea');
-                // Set value (string to be copied)
-                el.value = secret_key;
-                // Set non-editable to avoid focus and move outside of view
-                el.setAttribute('readonly', '');
-                el.style = {position: 'absolute', left: '-9999px'};
-                document.body.appendChild(el);
-                // Select text inside element
-                el.select();
-                // Copy text to clipboard
-                document.execCommand('copy');
-                // Remove temporary element
-                document.body.removeChild(el);
-            });
-            modal_toggler.forEach((el)=>{
-                console.log(el);
-                el.addEventListener('click',($modal)=>{
-                    let modal_target = el.getAttribute('data-target');
-                    let secret_key = el.getAttribute('secret-key');
-                    document.getElementById('secret-key').innerHTML = secret_key;
-                    document.querySelector('#'+modal_target).classList.add('is-active');
-                });
-
-            })
-            modal_close.addEventListener('click',()=>{
-                modal_close.parentNode.classList.remove('is-active')
-            });
+@parent
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let modal_toggler = document.querySelectorAll('.modal-button');
+        let modal_close = document.querySelector('.modal-close');
+        let modal_background = document.querySelector('.modal-close');
+        document.querySelector('.copy').addEventListener('click', () => {
+            let secret_key = document.getElementById('secret-key').innerText
+            // Create new element
+            var el = document.createElement('textarea');
+            // Set value (string to be copied)
+            el.value = secret_key;
+            // Set non-editable to avoid focus and move outside of view
+            el.setAttribute('readonly', '');
+            el.style = {
+                position: 'absolute',
+                left: '-9999px'
+            };
+            document.body.appendChild(el);
+            // Select text inside element
+            el.select();
+            // Copy text to clipboard
+            document.execCommand('copy');
+            // Remove temporary element
+            document.body.removeChild(el);
         });
-    </script>
+        modal_toggler.forEach((el) => {
+            console.log(el);
+            el.addEventListener('click', ($modal) => {
+                let modal_target = el.getAttribute('data-target');
+                let secret_key = el.getAttribute('secret-key');
+                document.getElementById('secret-key').innerHTML = secret_key;
+                document.querySelector('#' + modal_target).classList.add('is-active');
+            });
+
+        })
+        modal_close.addEventListener('click', () => {
+            modal_close.parentNode.classList.remove('is-active')
+        });
+    });
+
+</script>
 @endsection

@@ -2,7 +2,8 @@
 @section('main')
 <div class="columns">
     <div class="column is-offset-half has-text-right">
-        <button class="button is-primary modal-button" data-target="modal"><span class="icon"><i class="fa fa-plus"></i></span><span>Add Telegram Bot</span></button>
+        <button class="button is-primary modal-button" data-target="modal"><span class="icon"><i
+                    class="fa fa-plus"></i></span><span>Add Telegram Bot</span></button>
     </div>
 </div>
 
@@ -19,11 +20,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($telegrams as $key=>$telegram)
+                @foreach($telegrams as $key=>$telegram)
                     <tr>
-                        <td>{{$key+1}}</td>
-                        <td>{{$telegram->name}}</td>
-                        <td>{{$telegram->username}}</td>
+                        <td>{{ $key+1 }}</td>
+                        <td>{{ $telegram->name }}</td>
+                        <td>{{ $telegram->username }}</td>
                         <td>
                             <form action="{{ url('telegram/'.$telegram->id) }}" method="POST">
                                 @csrf
@@ -89,7 +90,7 @@
                     </div>
                     <form action="" method="POST">
                         @csrf
-                        <input type="hidden" id="token" name="token" >
+                        <input type="hidden" id="token" name="token">
                         <input type="hidden" id="name" name="name">
                         <input type="hidden" id="username" name="username">
                         <button class="button is-primary is-fullwidth">Add Telegram Bot</button>
@@ -103,73 +104,75 @@
 @endsection
 
 @section('script')
-    @parent
-    <script>
-        document.addEventListener('DOMContentLoaded',()=>{
-            function getBotDetail() {
-                let bot_token = document.getElementById('bot_token').value
-                let requestOptions = {
-                    method: 'GET',
-                    redirect: 'follow'
-                    };
-                let telegramAPI = "https://api.telegram.org/bot";
-                let urlTarget = telegramAPI+bot_token+"/getMe";
+@parent
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        function getBotDetail() {
+            let bot_token = document.getElementById('bot_token').value
+            let requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+            let telegramAPI = "https://api.telegram.org/bot";
+            let urlTarget = telegramAPI + bot_token + "/getMe";
 
-                // async
-                (async ()=>{
-                    const resp = await fetch(urlTarget,requestOptions).then((data)=>{
-                        return data.json();
-                    }).then((data)=>{
-                        res = data['result'];
-                        document.getElementById('bot-name').innerHTML = res['first_name'];
-                        document.getElementById('bot-username').innerHTML = res['username'];
-                        document.getElementById('bot-token').innerHTML = bot_token;
-                        document.getElementById('token').value = bot_token;
-                        document.getElementById('name').value = res['first_name'];
-                        document.getElementById('username').value = res['username'];
-                        document.getElementById('form-bot').classList.add('is-hidden');
-                        document.getElementById('retrieve-info').classList.remove('is-hidden');
-                    }).catch((resp)=>{
-                        message = resp.message;
-                        // console.log(resp.message);
-                        document.getElementById('bot_error').innerHTML = message;
-                        document.getElementById('bot_error').classList.remove('is-hidden');
-                    });
-                    document.getElementById('bot_search').classList.remove('is-loading');
-                    return resp;
-                })();
-                document.getElementById('bot_search').classList.add('is-loading');
-            }
-            function resetBotDetail(){
-                document.getElementById('bot_error').classList.add('is-hidden');
-                document.getElementById('bot_search').classList.remove('is-loading');
-                document.getElementById('bot-name').innerHTML = "";
-                document.getElementById('bot-username').innerHTML = "";
-                document.getElementById('bot-token').innerHTML = "";
-                document.getElementById('bot_token').value = "";
-                document.getElementById('token').value = "";
-                document.getElementById('name').value = "";
-                document.getElementById('username').value = "";
-                document.getElementById('form-bot').classList.remove('is-hidden');
-                document.getElementById('retrieve-info').classList.add('is-hidden');
-            }
-            document.getElementById('bot_search').addEventListener('click',()=>{
-                getBotDetail();
-            });
-            let modal_toggler = document.querySelectorAll('.modal-button');
-            let modal_close = document.querySelector('.modal-close');
-            let modal_background = document.querySelector('.modal-close');
-            modal_toggler.forEach((el)=>{
-                el.addEventListener('click',($modal)=>{
-                    let modal_target = el.getAttribute('data-target');
-                    document.querySelector('#'+modal_target).classList.add('is-active');
+            // async
+            (async () => {
+                const resp = await fetch(urlTarget, requestOptions).then((data) => {
+                    return data.json();
+                }).then((data) => {
+                    res = data['result'];
+                    document.getElementById('bot-name').innerHTML = res['first_name'];
+                    document.getElementById('bot-username').innerHTML = res['username'];
+                    document.getElementById('bot-token').innerHTML = bot_token;
+                    document.getElementById('token').value = bot_token;
+                    document.getElementById('name').value = res['first_name'];
+                    document.getElementById('username').value = res['username'];
+                    document.getElementById('form-bot').classList.add('is-hidden');
+                    document.getElementById('retrieve-info').classList.remove('is-hidden');
+                }).catch((resp) => {
+                    message = resp.message;
+                    // console.log(resp.message);
+                    document.getElementById('bot_error').innerHTML = message;
+                    document.getElementById('bot_error').classList.remove('is-hidden');
                 });
+                document.getElementById('bot_search').classList.remove('is-loading');
+                return resp;
+            })();
+            document.getElementById('bot_search').classList.add('is-loading');
+        }
 
-            })
-            modal_close.addEventListener('click',()=>{
-                modal_close.parentNode.classList.remove('is-active');
-                resetBotDetail();
-            });
+        function resetBotDetail() {
+            document.getElementById('bot_error').classList.add('is-hidden');
+            document.getElementById('bot_search').classList.remove('is-loading');
+            document.getElementById('bot-name').innerHTML = "";
+            document.getElementById('bot-username').innerHTML = "";
+            document.getElementById('bot-token').innerHTML = "";
+            document.getElementById('bot_token').value = "";
+            document.getElementById('token').value = "";
+            document.getElementById('name').value = "";
+            document.getElementById('username').value = "";
+            document.getElementById('form-bot').classList.remove('is-hidden');
+            document.getElementById('retrieve-info').classList.add('is-hidden');
+        }
+        document.getElementById('bot_search').addEventListener('click', () => {
+            getBotDetail();
         });
-    </script>
+        let modal_toggler = document.querySelectorAll('.modal-button');
+        let modal_close = document.querySelector('.modal-close');
+        let modal_background = document.querySelector('.modal-close');
+        modal_toggler.forEach((el) => {
+            el.addEventListener('click', ($modal) => {
+                let modal_target = el.getAttribute('data-target');
+                document.querySelector('#' + modal_target).classList.add('is-active');
+            });
+
+        })
+        modal_close.addEventListener('click', () => {
+            modal_close.parentNode.classList.remove('is-active');
+            resetBotDetail();
+        });
+    });
+
+</script>
 @endsection

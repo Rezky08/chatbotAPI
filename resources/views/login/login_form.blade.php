@@ -3,18 +3,19 @@
 @section('title',$title)
 
 @section('head')
-    @parent
-    <style>
-        .bg-chat{
-            /* content: ""; */
-            height: 100%;
-            width: 100%;
-            background: url("img/bglogin.png");
-            opacity: 0.15;
-            position: absolute;
-            /* z-index: -11; */
-        }
-    </style>
+@parent
+<style>
+    .bg-chat {
+        /* content: ""; */
+        height: 100%;
+        width: 100%;
+        background: url("img/bglogin.png");
+        opacity: 0.15;
+        position: absolute;
+        /* z-index: -11; */
+    }
+
+</style>
 @endsection
 
 @section('content')
@@ -25,7 +26,8 @@
             <div class="columns is-vcentered">
                 <div class="column is-one-third has-text-centered">
                     <figure class="is-inline-block">
-                        <img src="{{ asset('img/chatboticon.svg') }}" alt="Chat Bot Icon" class="image is-128x128">
+                        <img src="{{ asset('img/chatboticon.svg') }}" alt="Chat Bot Icon"
+                            class="image is-128x128">
                     </figure>
                     <div class="block has-text-centered">
                         <span class="is-size-2 has-text-rubik has-text-white">CHAT BOT</span>
@@ -39,29 +41,32 @@
                                 @csrf
                                 <div class="field">
                                     <div class="control has-icons-left">
-                                        <input type="email" name="email" class="input is-medium" placeholder="Enter your email" value="{{old('email')}}">
+                                        <input type="email" name="email" class="input is-medium"
+                                            placeholder="Enter your email" value="{{ old('email') }}">
                                         <span class="icon is-small is-left has-text-info">
                                             <i class="fa fa-envelope"></i>
                                         </span>
                                     </div>
                                     @error('email')
-                                        <p class="help is-danger">{{$message}}</p>
+                                        <p class="help is-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="field">
                                     <div class="control has-icons-left">
-                                        <input type="password" name="password" class="input is-medium" placeholder="Enter your password">
+                                        <input type="password" name="password" class="input is-medium"
+                                            placeholder="Enter your password">
                                         <span class="icon is-small is-left has-text-info">
                                             <i class="fa fa-key"></i>
                                         </span>
                                     </div>
                                     @error('password')
-                                        <p class="help is-danger">{{$message}}</p>
+                                        <p class="help is-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="columns">
                                     <div class="column">
-                                        <a href="{{ url('register') }}" class="has-text-grey">doesn't have an account?</a>
+                                        <a href="{{ url('register') }}" class="has-text-grey">doesn't
+                                            have an account?</a>
                                     </div>
                                     <div class="column has-text-right">
                                         <a href="/" class="has-text-info">Forgot your password?</a>
