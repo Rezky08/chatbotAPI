@@ -28,4 +28,22 @@ class TelegramBot
             return false;
         }
     }
+
+    public function disconnectWebhook($current_webhook)
+    {
+
+        $url_get_info = env('TELEGRAM_API') . $this->bot_token . "/getWebhookInfo";
+        $url_delete_webhook = env('TELEGRAM_API') . $this->bot_token . "/deleteWebhook";
+        try {
+            $res = $this->client->get($url_get_info);
+            $webhook_info = json_decode($res->getBody()->getContents());
+            if ($webhook_info->result->url == $current_webhook) {
+                $res = $this->client->get($url_delete_webhook);
+            }
+            return true;
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+    }
 }
