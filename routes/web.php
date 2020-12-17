@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'telegram'], function () {
         Route::get('/', 'TelegramController@index');
         Route::post('/', 'TelegramController@store');
+        Route::delete('/{id}', 'TelegramController@destroy');
     });
 });
 

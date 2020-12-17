@@ -25,10 +25,10 @@
                         <td>{{$telegram->name}}</td>
                         <td>{{$telegram->username}}</td>
                         <td>
-                            <form action="{{ url('app-key/'.$app->id) }}" method="POST">
+                            <form action="{{ url('telegram/'.$telegram->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="button border-0" data-tooltip="Revoke Key">
+                                <button type="submit" class="button border-0" data-tooltip="Disconnect webhook">
                                     <span class="icon is-small has-text-danger"><i class="fa fa-trash"></i></span>
                                 </button>
                             </form>
