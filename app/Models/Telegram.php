@@ -13,4 +13,8 @@ class Telegram extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    public function account()
+    {
+        return $this->hasMany(TelegramAccount::class, 'telegram_id', 'id');
+    }
 }

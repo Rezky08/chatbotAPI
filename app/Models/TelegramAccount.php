@@ -14,4 +14,8 @@ class TelegramAccount extends Model
     {
         return $this->hasMany(Chat::class, 'account_id', 'id');
     }
+    public function telegram()
+    {
+        return $this->belongsTo(Telegram::class, 'telegram_id', 'id');
+    }
 }
