@@ -53,6 +53,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/', 'TelegramChatController@index');
         });
     });
+    Route::group(['prefix' => 'question'], function () {
+        Route::get('/{id?}', 'QuestionController@show');
+        Route::post('/{id}/bulk', 'QuestionController@bulkStore');
+    });
 });
 
 Route::get('/logout', 'LoginController@destroy');
