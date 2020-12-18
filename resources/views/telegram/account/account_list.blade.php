@@ -11,7 +11,8 @@
 
 
 @section('main')
-    <form action="" method="get" id="search">
+
+    <form action="" method="get" id="search" class="my-3">
         <div class="columns">
             <div class="column is-half">
                 <select name="telegram_bot" id="telegram-bot" style="width: 100%">
