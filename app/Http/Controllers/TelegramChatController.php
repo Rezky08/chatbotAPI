@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Breadcrumb;
+use App\Models\Chat;
 use App\Models\Telegram;
-use App\Models\TelegramAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class TelegramAccountController extends Controller
+class TelegramChatController extends Controller
 {
-    private $telegram_account_model;
     private $breadcrumbs;
+    private $chat_model;
     private $telegram_model;
+
     function __construct(Request $request)
     {
         $this->breadcrumbs = (new Breadcrumb)->get($request->path());
-        $this->telegram_account_model = new TelegramAccount();
+        $this->chat_model = new Chat();
         $this->telegram_model = new Telegram();
     }
     /**
@@ -28,24 +29,25 @@ class TelegramAccountController extends Controller
     {
         $user = Auth::user();
         $apps = $user->application()->active();
-        $app_ids = $apps->pluck('id')->toArray();
+        $app_ids = $apps->pluck('id');
         $telegrams = $this->telegram_model->active($app_ids)->get();
+        $accounts = [];
+        $chats = [];
         if ($request->telegram_bot) {
-            $telegrams = $telegrams->where('id', $request->telegram_bot);
+            $accounts = $telegrams->find($request->telegram_bot)->account;
         }
-        $telegram_ids = $telegrams->pluck('id')->toArray();
-        $accounts = $this->telegram_account_model->whereIn('telegram_id', $telegram_ids)->orderBy('telegram_id');
         if ($request->telegram_account) {
-            $accounts = $accounts->where('id', $request->telegram_account);
+            $chats = $accounts->find($request->telegram_account)->chat;
         }
-        $accounts = $accounts->get();
+
         $data = [
-            'title' => "Account",
+            'title' => "Telegram Chat",
             'breadcrumbs' => $this->breadcrumbs,
+            'telegrams' => $telegrams,
             'accounts' => $accounts,
-            'telegrams' => $telegrams
+            'chats' => $chats
         ];
-        return view('telegram.account.account_list', $data);
+        return view('telegram.chat.chat_list', $data);
     }
 
     /**

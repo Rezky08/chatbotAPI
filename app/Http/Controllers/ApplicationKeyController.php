@@ -16,7 +16,6 @@ use Laravel\Passport\ClientRepository;
 class ApplicationKeyController extends Controller
 {
     private $user_model;
-    private $client_model;
     private $title;
     private $client_repo;
     private $breadcrumbs;
@@ -26,7 +25,6 @@ class ApplicationKeyController extends Controller
         $this->client_repo = $client_repo;
         $this->title = "Application Key";
         $this->user_model = new User();
-        $this->client_model = new Client();
     }
     /**
      * Display a listing of the resource.
@@ -36,12 +34,14 @@ class ApplicationKeyController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $apps = $user->application()->active();
+
         $data = [
             'title' => $this->title,
-            'apps' => $user->client()->active()->get(),
+            'apps' => $apps,
             'breadcrumbs' => $this->breadcrumbs
         ];
-        return view('app_key.app_key_list', $data);
+        return view('application.key.key_list', $data);
     }
 
     /**
@@ -56,7 +56,7 @@ class ApplicationKeyController extends Controller
             'breadcrumbs' => $this->breadcrumbs
 
         ];
-        return view('app_key.app_key_form', $data);
+        return view('application.key.key_form', $data);
     }
 
     /**
@@ -80,7 +80,13 @@ class ApplicationKeyController extends Controller
         }
         $user = Auth::user();
         try {
-            $this->client_repo->create($user->id, $request->app_name, $request->redirect);
+            $res = $this->client_repo->create($user->id, $request->app_name, $request->redirect);
+            $app_data_insert = [
+                'user_id' => $res->user_id,
+                'client_id' => $res->id,
+                'created_at' => $res->created_at
+            ];
+            $res = $user->application()->insert($app_data_insert);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [
@@ -91,7 +97,7 @@ class ApplicationKeyController extends Controller
         $response = [
             'success' => "Application " . $request->app_name . " has been added"
         ];
-        return redirect()->to('/app-key')->with($response);
+        return redirect()->to('/application/key')->with($response);
     }
 
     /**
@@ -136,9 +142,10 @@ class ApplicationKeyController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        $client = $user->client->find($id);
+        $app = $user->application->find($id);
         try {
-            $this->client_repo->delete($client);
+            $this->client_repo->delete($app->client);
+            $app->delete();
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [

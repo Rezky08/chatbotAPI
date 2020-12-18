@@ -28,13 +28,16 @@ class TelegramController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $telegrams = $user->telegram;
+        $apps = $user->application()->active();
+        $app_ids = $apps->pluck('id')->toArray();
+        $telegrams = $this->telegram_model->active($app_ids)->get();
         $data = [
             'title' => "Telegram",
             'telegrams' => $telegrams,
+            'apps' => $apps,
             'breadcrumbs' => $this->breadcrumbs
         ];
-        return view('telegram.telegram_list', $data);
+        return view('telegram.bot.bot_list', $data);
     }
 
     /**
@@ -55,10 +58,12 @@ class TelegramController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
         $rules = [
             'name' => ['required', 'filled'],
             'username' => ['required', 'filled'],
-            'token' => ['required', 'filled', 'unique:telegrams,bot_token,NULL,id,deleted_at,NULL']
+            'token' => ['required', 'filled', 'unique:telegrams,bot_token,NULL,id,deleted_at,NULL'],
+            'app' => ['required', 'filled', 'exists:applications,id,user_id,' . $user->id . ',deleted_at,NULL']
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -79,9 +84,8 @@ class TelegramController extends Controller
         }
 
         try {
-            $user = Auth::user();
             $data_insert = [
-                'user_id' => $user->id,
+                'app_id' => $request->app,
                 'bot_token' => $request->token,
                 'name' => $request->name,
                 'username' => $request->username,
@@ -142,10 +146,11 @@ class TelegramController extends Controller
      * @param  \App\Models\Telegram  $telegram
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($app_id, $id)
     {
         $user = Auth::user();
-        $telegram = $user->telegram->find($id);
+        $app = $user->application->find($app_id);
+        $telegram = $app->telegram->find($id);
 
         if (!$telegram) {
             $response = [

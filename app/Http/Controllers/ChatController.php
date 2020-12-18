@@ -3,49 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Breadcrumb;
-use App\Models\Telegram;
-use App\Models\TelegramAccount;
+use App\Models\Chat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class TelegramAccountController extends Controller
+class ChatController extends Controller
 {
-    private $telegram_account_model;
     private $breadcrumbs;
-    private $telegram_model;
+    private $chat_model;
     function __construct(Request $request)
     {
         $this->breadcrumbs = (new Breadcrumb)->get($request->path());
-        $this->telegram_account_model = new TelegramAccount();
-        $this->telegram_model = new Telegram();
+        $this->chat_model = new Chat();
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = Auth::user();
-        $apps = $user->application()->active();
-        $app_ids = $apps->pluck('id')->toArray();
-        $telegrams = $this->telegram_model->active($app_ids)->get();
-        if ($request->telegram_bot) {
-            $telegrams = $telegrams->where('id', $request->telegram_bot);
-        }
-        $telegram_ids = $telegrams->pluck('id')->toArray();
-        $accounts = $this->telegram_account_model->whereIn('telegram_id', $telegram_ids)->orderBy('telegram_id');
-        if ($request->telegram_account) {
-            $accounts = $accounts->where('id', $request->telegram_account);
-        }
-        $accounts = $accounts->get();
-        $data = [
-            'title' => "Account",
-            'breadcrumbs' => $this->breadcrumbs,
-            'accounts' => $accounts,
-            'telegrams' => $telegrams
-        ];
-        return view('telegram.account.account_list', $data);
     }
 
     /**
@@ -77,7 +54,13 @@ class TelegramAccountController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = Auth::user();
+        $chats = $user->client->find($id);
+        $data = [
+            'title' => "Chat",
+            'breadcrumbs' => $this->breadcrumbs
+        ];
+        return view('chat.chat_list', $data);
     }
 
     /**
