@@ -9,10 +9,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TelegramAccount extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'telgram_accounts';
+    protected $table = 'telegram_accounts';
     public function chat()
     {
         return $this->hasMany(Chat::class, 'account_id', 'id');
+    }
+    function getNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
     public function telegram()
     {

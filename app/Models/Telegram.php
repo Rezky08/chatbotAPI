@@ -9,12 +9,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Telegram extends Model
 {
     use HasFactory, SoftDeletes;
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
+
     public function account()
     {
         return $this->hasMany(TelegramAccount::class, 'telegram_id', 'id');
+    }
+    public function application()
+    {
+        return $this->belongsTo(Application::class, 'app_id', 'id');
+    }
+    public function scopeActive($query, $app_ids)
+    {
+        return $this->whereIn('app_id', $app_ids);
     }
 }

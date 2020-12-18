@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -43,12 +42,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function client()
+    public function application()
     {
-        return $this->hasMany(Client::class, 'user_id', 'id');
-    }
-    public function telegram()
-    {
-        return $this->hasMany(Telegram::class, 'user_id', 'id');
+        return $this->hasMany(Application::class, 'user_id', 'id');
     }
 }
