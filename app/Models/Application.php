@@ -33,4 +33,12 @@ class Application extends Model
     {
         return $this->hasMany(Telegram::class, 'app_id', 'id');
     }
+    public function question()
+    {
+        return $this->hasMany(Question::class, 'app_id', 'id');
+    }
+    public function answer()
+    {
+        return $this->hasMany(Question::class, 'app_id', 'id');
+    }
 }
