@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeClientIdToAppId extends Migration
+class ChangeClientToAppLabel extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class ChangeClientIdToAppId extends Migration
      */
     public function up()
     {
-        Schema::table('datasets', function (Blueprint $table) {
+        Schema::table('labels', function (Blueprint $table) {
             $table->dropColumn('client_id');
             $table->integer('app_id')->after('id');
         });
@@ -26,7 +26,7 @@ class ChangeClientIdToAppId extends Migration
      */
     public function down()
     {
-        Schema::table('datasets', function (Blueprint $table) {
+        Schema::table('labels', function (Blueprint $table) {
             $table->string('client_id', 100)->after('id');
             $table->dropColumn('app_id');
         });
