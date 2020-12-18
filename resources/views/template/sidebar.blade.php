@@ -8,34 +8,47 @@
                     Dashboard
                 </a></li>
         </ul>
-        <span class="menu-label">App</span>
+        <span class="menu-label">Application</span>
         <ul class="menu-list">
-            <li><a href="{{ url('/app-key') }}">
+            <li>
+                <a href="{{ url('/application/key') }}">
                     <span class="icon has-text-info">
                         <i class="fas fa-key"></i>
                     </span>
                     Application Key
-                </a></li>
-            <li><a href="{{ url('/telegram') }}">
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('/application/chat', []) }}">
+                    <span class="icon has-text-info">
+                        <i class="fa fa-comment"></i>
+                    </span>
+                    <span>Chat</span>
+                </a>
+            </li>
+
+        </ul>
+        <span class="menu-label">Telegram</span>
+        <ul class="menu-list">
+            <li>
+                <a href="{{ url('/telegram') }}">
                     <span class="icon has-text-info">
                         <i class="fab fa-telegram"></i>
                     </span>
-                    Telegram
-                </a></li>
-        </ul>
-        <span class="menu-label">App Report</span>
-        <ul class="menu-list">
-            <li><a href="{{ url('/') }}">
+                    Telegram Bot
+                </a>
+            </li>
+            <li><a href="{{ url('/telegram/account') }}">
                     <span class="icon has-text-info">
                         <i class="fas fa-user"></i>
                     </span>
                     Account
                 </a></li>
-            <li><a href="{{ url('/') }}">
+            <li><a href="{{ url('/telegram/chat') }}">
                     <span class="icon has-text-info">
                         <i class="fas fa-comment"></i>
                     </span>
-                    Chats
+                    Chat
                 </a></li>
         </ul>
         <span class="menu-label">Data</span>

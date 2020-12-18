@@ -31,17 +31,27 @@ Route::group(['middleware' => ['auth.redirect:web']], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', 'AppManagerController@index');
-    Route::group(['prefix' => 'app-key'], function () {
-        Route::get('/', 'ApplicationKeyController@index');
-        Route::delete('/{id}', 'ApplicationKeyController@destroy');
-        Route::get('/add', 'ApplicationKeyController@create');
-        Route::post('/add', 'ApplicationKeyController@store');
-        Route::get('/a/b/c/d', 'ApplicationKeyController@show');
+    Route::group(['prefix' => 'application'], function () {
+        Route::group(['prefix' => 'key'], function () {
+            Route::get('/', 'ApplicationKeyController@index');
+            Route::delete('/{id}', 'ApplicationKeyController@destroy');
+            Route::get('/add', 'ApplicationKeyController@create');
+            Route::post('/add', 'ApplicationKeyController@store');
+        });
+        Route::group(['prefix' => 'chat'], function () {
+            Route::get('/{id?}', 'ApplicationChatController@index');
+        });
     });
     Route::group(['prefix' => 'telegram'], function () {
         Route::get('/', 'TelegramController@index');
         Route::post('/', 'TelegramController@store');
-        Route::delete('/{id}', 'TelegramController@destroy');
+        Route::delete('/{app_id}/{id}', 'TelegramController@destroy');
+        Route::group(['prefix' => 'account'], function () {
+            Route::get('/', 'TelegramAccountController@index');
+        });
+        Route::group(['prefix' => 'chat'], function () {
+            Route::get('/', 'TelegramChatController@index');
+        });
     });
 });
 

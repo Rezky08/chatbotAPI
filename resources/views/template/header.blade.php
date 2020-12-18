@@ -12,7 +12,7 @@
         }
 
         .border-0 {
-            border: 0;
+            border: 0px !important;
         }
 
     </style>

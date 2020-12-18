@@ -1,4 +1,15 @@
 @extends('template.auth_template')
+
+
+@section('head')
+    @parent
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+@endsection
+
+
 @section('main')
     <div class="columns">
         <div class="column is-offset-half has-text-right">
@@ -14,20 +25,28 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Name</th>
+                        <th>App Name</th>
+                        <th>Bot Name</th>
                         <th>Username</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($accounts as $key => $account)
+                    @foreach ($telegrams as $key => $telegram)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $account->name }}</td>
-                            <td>{{ $account->username }}</td>
+                            <td>{{ $telegram->application->client->name }}</td>
+                            <td>{{ $telegram->name }}</td>
+                            <td>{{ $telegram->username }}</td>
                             <td>
-                                <button class="button is-info"><span class="icon"> <i class="fa fa-comment"
-                                            aria-hidden="true"></i></span>Chat Log</button>
+                                <form action="{{ url('telegram/' . $telegram->application->id . '/' . $telegram->id) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="button border-0" data-tooltip="Disconnect webhook">
+                                        <span class="icon is-small has-text-danger"><i class="fa fa-trash"></i></span>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -85,10 +104,22 @@
                         </div>
                         <form action="" method="POST">
                             @csrf
+                            <select name="app" id="app" style="width: 100%">
+                                <option value=""></option>
+                                @foreach ($apps as $key => $app)
+                                    <option value="{{ $app->id }}">
+                                        {{ $app->client->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                             <input type="hidden" id="token" name="token">
                             <input type="hidden" id="name" name="name">
                             <input type="hidden" id="username" name="username">
-                            <button class="button is-primary is-fullwidth">Add Telegram Bot</button>
+                            <div class="field my-3">
+                                <div class="control">
+                                    <button class="button is-primary is-fullwidth">Add Telegram Bot</button>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -101,6 +132,17 @@
 @section('script')
     @parent
     <script>
+        $(document).ready(function() {
+            $('#app').select2({
+                placeholder: "Select connect application",
+                // allowClear
+            });
+            $('.select2-container').addClass('button');
+            $('.select2-container').addClass('has-text-left');
+            $('.select2-selection').addClass('border-0');
+
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             function getBotDetail() {
                 let bot_token = document.getElementById('bot_token').value

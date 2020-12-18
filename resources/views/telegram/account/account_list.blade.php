@@ -1,11 +1,41 @@
 @extends('template.auth_template')
+
+
+@section('head')
+    @parent
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+@endsection
+
+
 @section('main')
-    <div class="columns">
-        <div class="column is-offset-half has-text-right">
-            <button class="button is-primary modal-button" data-target="modal"><span class="icon"><i
-                        class="fa fa-plus"></i></span><span>Add Telegram Bot</span></button>
+    <form action="" method="get" id="search">
+        <div class="columns">
+            <div class="column is-half">
+                <select name="telegram_bot" id="telegram-bot" style="width: 100%">
+                    <option value=""></option>
+                    @foreach ($telegrams as $key => $telegram)
+                        <option value="{{ $telegram->id }}" @if (Request::get('telegram_bot') == $telegram->id)
+                            selected
+                    @endif
+                    >{{ $telegram->name }} - {{ $telegram->username }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="column is-half">
+                <select name="telegram_account" id="telegram-account" style="width: 100%">
+                    <option value=""></option>
+                    @foreach ($accounts as $key => $account)
+                        <option value="{{ $account->id }}" @if (Request::get('telegram_account') == $account->id)
+                            selected
+                    @endif>{{ $account->name }} - {{ $account->username }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-    </div>
+    </form>
 
     {{-- table --}}
     <div class="box">
@@ -14,25 +44,22 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Bot Name</th>
+                        <th>Name</th>
                         <th>Username</th>
+                        <th>Bot Name</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($telegrams as $key => $telegram)
+                    @foreach ($accounts as $key => $account)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $telegram->name }}</td>
-                            <td>{{ $telegram->username }}</td>
+                            <td>{{ $account->name }}</td>
+                            <td>{{ $account->username }}</td>
+                            <td>{{ $account->telegram->name }}</td>
                             <td>
-                                <form action="{{ url('telegram/' . $telegram->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="button border-0" data-tooltip="Disconnect webhook">
-                                        <span class="icon is-small has-text-danger"><i class="fa fa-trash"></i></span>
-                                    </button>
-                                </form>
+                                <button class="button is-info"><span class="icon"><i class="fa fa-comment"
+                                            aria-hidden="true"></i></span><span>Chat Log</span></button>
                             </td>
                         </tr>
                     @endforeach
@@ -106,6 +133,27 @@
 @section('script')
     @parent
     <script>
+        $(document).ready(function() {
+            $('#telegram-bot').select2({
+                placeholder: "Select your telegram bot",
+                // allowClear
+            });
+            $('#telegram-account').select2({
+                placeholder: "Select your telegram account",
+                // allowClear
+            });
+            $('#telegram-bot').on('change', function() {
+                $('#search').submit();
+            });
+            $('#telegram-account').on('change', function() {
+                $('#search').submit();
+            });
+            $('.select2-container').addClass('button');
+            $('.select2-container').addClass('has-text-left');
+            $('.select2-selection').addClass('border-0');
+
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             function getBotDetail() {
                 let bot_token = document.getElementById('bot_token').value

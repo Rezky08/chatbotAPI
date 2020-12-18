@@ -2,8 +2,9 @@
 @section('main')
     <div class="columns">
         <div class="column is-offset-half has-text-right">
-            <a href="{{ url('/app-key/add') }}" class="button is-primary"><span class="icon"><i
-                        class="fa fa-plus"></i></span><span>Add Application</span></a>
+            <a href="{{ url('/application/key/add') }}" class="button is-primary">
+                <span class="icon"><i class="fa fa-plus"></i></span><span>Add Application</span>
+            </a>
         </div>
     </div>
 
@@ -25,13 +26,13 @@
                     @foreach ($apps as $key => $app)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $app->name }}</td>
-                            <td><button class="button modal-button is-small is-info" secret-key="{{ $app->secret }}"
+                            <td>{{ $app->client->name }}</td>
+                            <td><button class="button modal-button is-small is-info" secret-key="{{ $app->client->secret }}"
                                     data-target="modal"> Show </button></td>
-                            <td>{{ $app->redirect }}</td>
+                            <td>{{ $app->client->redirect }}</td>
                             <td>{{ $app->created_at }}</td>
                             <td>
-                                <form action="{{ url('app-key/' . $app->id) }}" method="POST">
+                                <form action="{{ url('application/key/' . $app->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="button border-0" data-tooltip="Revoke Key">
