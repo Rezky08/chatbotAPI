@@ -25,26 +25,51 @@ class TelegramChatController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $telegram_id = null, $id = null)
     {
         $user = Auth::user();
-        $apps = $user->application()->active();
+        $apps = $user->application;
         $app_ids = $apps->pluck('id');
-        $telegrams = $this->telegram_model->active($app_ids)->get();
+        $telegrams = [];
         $accounts = [];
         $chats = [];
-        if ($request->telegram_bot) {
-            $accounts = $telegrams->find($request->telegram_bot)->account;
+        $telegram = null;
+        $account = null;
+        if ($app_ids) {
+            $telegrams = $this->telegram_model->active($app_ids)->get();
         }
-        if ($request->telegram_account) {
-            $chats = $accounts->find($request->telegram_account)->chat;
+        if ($telegram_id) {
+            $telegram = $telegrams->find($telegram_id);
+            if ($telegram) {
+                $accounts = $telegram->account;
+            } else {
+                $response = [
+                    'error' => 'Cannot find your Telegram Bot'
+                ];
+                return redirect()->to('telegram/chat')->with($response);
+            }
+        }
+        if ($id) {
+            if ($telegram) {
+                $account = $accounts->find($id);
+                if (!$account) {
+                    $response = [
+                        'error' => 'Cannot find account'
+                    ];
+                    return redirect()->to('telegram/chat')->with($response);
+                } else {
+                    $chats = $account->chat;
+                }
+            }
         }
 
         $data = [
             'title' => "Telegram Chat",
             'breadcrumbs' => $this->breadcrumbs,
             'telegrams' => $telegrams,
+            'telegram' => $telegram,
             'accounts' => $accounts,
+            'account' => $account,
             'chats' => $chats
         ];
         return view('telegram.chat.chat_list', $data);

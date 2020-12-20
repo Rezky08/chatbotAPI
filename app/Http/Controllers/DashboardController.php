@@ -3,49 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Breadcrumb;
-use App\Models\Chat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ApplicationChatController extends Controller
+class DashboardController extends Controller
 {
     private $breadcrumbs;
-    private $chat_model;
     function __construct(Request $request)
     {
         $this->breadcrumbs = (new Breadcrumb)->get($request->path());
-        $this->chat_model = new Chat();
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id = null)
+    public function index()
     {
         $user = Auth::user();
         $apps = $user->application;
-        $chats = [];
-        $app = null;
-        if ($id) {
-            $app = $apps->find($id);
-            if ($app) {
-                $chats = $app->chat()->applicationChat()->get();
-            } else {
-                $response = [
-                    'error' => 'Cannot find your application'
-                ];
-                return redirect()->to('application/chat')->with($response);
-            }
-        }
         $data = [
-            'title' => 'Application Chat',
+            'title' => "Dashboard",
             'breadcrumbs' => $this->breadcrumbs,
-            'chats' => $chats,
-            'apps' => $apps,
-            'app' => $app
+            'telegram_count' => 0,
+            'account_count' => 0,
+            'chat_count' => 0,
+            'question_count' => 0,
+            'answer_count' => 0,
+            'label_count' => 0
         ];
-        return view('application.chat.chat_list', $data);
+        $apps->map(function ($app, $key) use (&$data) {
+            $data['telegram_count'] += $app->telegram->count();
+            $data['chat_count'] += $app->chat->count();
+            $data['question_count'] += $app->question->count();
+            $data['answer_count'] += $app->answer->count();
+            $data['label_count'] += $app->label->count();
+            $app->telegram->map(function ($telegram, $key) use (&$data) {
+                $data['account_count'] += $telegram->account->count();
+            });
+        });
+        return view('dashboard', $data);
     }
 
     /**

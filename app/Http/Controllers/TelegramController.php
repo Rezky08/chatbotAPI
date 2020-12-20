@@ -28,7 +28,7 @@ class TelegramController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $apps = $user->application()->active();
+        $apps = $user->application;
         $app_ids = $apps->pluck('id')->toArray();
         $telegrams = $this->telegram_model->active($app_ids)->get();
         $data = [

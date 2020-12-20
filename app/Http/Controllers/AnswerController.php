@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Breadcrumb;
-use App\Imports\QuestionImport;
-use App\Models\Question;
+use App\Imports\AnswerImport;
+use App\Models\Answer;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
-class QuestionController extends Controller
+class AnswerController extends Controller
 {
     private $breadcrumbs;
-    private $question_model;
+    private $answer_model;
     function __construct(Request $request)
     {
         $this->breadcrumbs = (new Breadcrumb)->get($request->path());
-        $this->question_model = new Question();
+        $this->answer_model = new Answer();
     }
     /**
      * Display a listing of the resource.
@@ -41,12 +41,12 @@ class QuestionController extends Controller
         $app = $user->application->find($id);
         $labels = $app->label;
         $data = [
-            'title' => 'Add Question ' . $app->client->name,
+            'title' => 'Add Answer ' . $app->client->name,
             'breadcrumbs' => $this->breadcrumbs,
             'labels' => $labels,
             'method' => 'POST'
         ];
-        return view('data.question.question_form', $data);
+        return view('data.answer.answer_form', $data);
     }
 
     /**
@@ -61,7 +61,7 @@ class QuestionController extends Controller
         $app = $user->application->find($id);
         $rules  = [
             'label_id' =>  ['required', 'filled', 'exists:labels,id,app_id,' . $app->id . ',deleted_at,NULL'],
-            'text' => ['required', 'filled', 'unique:questions,text,NULL,id,app_id,' . $app->id . ',label_id,' . $request->label_id . ',deleted_at,NULL']
+            'text' => ['required', 'filled', 'unique:answers,text,NULL,id,app_id,' . $app->id . ',label_id,' . $request->label_id . ',deleted_at,NULL']
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -69,7 +69,7 @@ class QuestionController extends Controller
         }
 
         try {
-            $res = $this->question_model->firstOrCreate(
+            $res = $this->answer_model->firstOrCreate(
                 [
                     'app_id' => $app->id,
                     'label_id' => $request->label_id,
@@ -87,7 +87,7 @@ class QuestionController extends Controller
             return redirect()->back()->with($response);
         }
         $response = [
-            'success' => "Success Add Question"
+            'success' => "Success Add Answer"
         ];
         return redirect()->back()->with($response);
     }
@@ -95,7 +95,7 @@ class QuestionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Question  $question
+     * @param  \App\Models\Answer  $answer
      * @return \Illuminate\Http\Response
      */
     public function show($id = null)
@@ -103,24 +103,24 @@ class QuestionController extends Controller
         $user = Auth::user();
         $apps = $user->application;
         $app = $apps->find($id);
-        $questions = [];
+        $answers = [];
         if ($app) {
-            $questions = $app->question;
+            $answers = $app->answer;
         }
         $data = [
-            'title' => "Question",
+            'title' => "Answer",
             'breadcrumbs' => $this->breadcrumbs,
-            'questions' => $questions,
+            'answers' => $answers,
             'apps' => $apps,
             'app' => $app
         ];
-        return view('data.question.question_list', $data);
+        return view('data.answer.answer_list', $data);
     }
 
     public function bulkStore(Request $request, $id)
     {
         $rules = [
-            'question_file' => ['required', 'filled', 'file', 'mimes:xlsx,xls,txt'],
+            'answer_file' => ['required', 'filled', 'file', 'mimes:xlsx,xls,txt'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -132,8 +132,8 @@ class QuestionController extends Controller
         $user = Auth::user();
         $app = $user->application->find($id);
         try {
-            $question_import = new QuestionImport($app);
-            $questions = Excel::import($question_import, $request->file('question_file'));
+            $answer_import = new AnswerImport($app);
+            $answers = Excel::import($answer_import, $request->file('answer_file'));
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [
@@ -150,52 +150,52 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Question  $question
+     * @param  \App\Models\Answer  $answer
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $app_id, $id)
     {
         $user = Auth::user();
         $app = $user->application->find($app_id);
-        $question = $app->question->find($id);
-        if (!$question) {
+        $answer = $app->answer->find($id);
+        if (!$answer) {
             $response = [
-                'error' => "Question not Found"
+                'error' => "Answer not Found"
             ];
-            return redirect()->to('question/' . $app_id)->with($response);
+            return redirect()->to('answer/' . $app_id)->with($response);
         }
         $labels = $app->label;
         $data = [
-            'title' => 'Edit Question ' . $app->client->name,
+            'title' => 'Edit Answer ' . $app->client->name,
             'breadcrumbs' => $this->breadcrumbs,
             'labels' => $labels,
-            'question' => $question,
+            'answer' => $answer,
             'method' => 'PUT'
         ];
-        return view('data.question.question_form', $data);
+        return view('data.answer.answer_form', $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Question  $question
+     * @param  \App\Models\Answer  $answer
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $app_id, $id)
     {
         $user = Auth::user();
         $app = $user->application->find($app_id);
-        $question = $app->question->find($id);
-        if (!$question) {
+        $answer = $app->answer->find($id);
+        if (!$answer) {
             $response = [
-                'error' => "Question not Found"
+                'error' => "Answer not Found"
             ];
-            return redirect()->to('question/' . $app_id)->with($response);
+            return redirect()->to('answer/' . $app_id)->with($response);
         }
         $rules  = [
             'label_id' =>  ['required', 'filled', 'exists:labels,id,app_id,' . $app->id . ',deleted_at,NULL'],
-            'text' => ['required', 'filled', 'unique:questions,text,' . $id . ',id,app_id,' . $app->id . ',label_id,' . $request->label_id . ',deleted_at,NULL']
+            'text' => ['required', 'filled', 'unique:answers,text,' . $id . ',id,app_id,' . $app->id . ',label_id,' . $request->label_id . ',deleted_at,NULL']
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -203,9 +203,9 @@ class QuestionController extends Controller
         }
 
         try {
-            $question->label_id = $request->label_id;
-            $question->text = $request->text;
-            $question->save();
+            $answer->label_id = $request->label_id;
+            $answer->text = $request->text;
+            $answer->save();
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [
@@ -214,7 +214,7 @@ class QuestionController extends Controller
             return redirect()->back()->with($response);
         }
         $response = [
-            'success' => "Success Edit Question"
+            'success' => "Success Edit Answer"
         ];
         return redirect()->back()->with($response);
     }
@@ -222,22 +222,22 @@ class QuestionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Question  $question
+     * @param  \App\Models\Answer  $answer
      * @return \Illuminate\Http\Response
      */
     public function destroy($app_id, $id)
     {
         $user = Auth::user();
         $app = $user->application->find($app_id);
-        $question = $app->question->find($id);
-        if (!$question) {
+        $answer = $app->answer->find($id);
+        if (!$answer) {
             $response = [
-                'error' => "Question not Found"
+                'error' => "Answer not Found"
             ];
-            return redirect()->to('question/' . $app_id)->with($response);
+            return redirect()->to('answer/' . $app_id)->with($response);
         }
         try {
-            $question->delete();
+            $answer->delete();
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [
@@ -246,7 +246,7 @@ class QuestionController extends Controller
             return redirect()->back()->with($response);
         }
         $response = [
-            'success' => "Success Delete Question"
+            'success' => "Success Delete Answer"
         ];
         return redirect()->back()->with($response);
     }

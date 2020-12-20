@@ -3,45 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Breadcrumb;
-use App\Models\User;
+use App\Models\Label;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Passport\Client;
-use Laravel\Passport\ClientRepository;
 
-class ApplicationKeyController extends Controller
+class LabelController extends Controller
 {
-    private $user_model;
-    private $title;
-    private $client_repo;
     private $breadcrumbs;
-    function __construct(ClientRepository $client_repo, Request $request)
+    private $label_model;
+    function __construct(Request $request)
     {
         $this->breadcrumbs = (new Breadcrumb)->get($request->path());
-        $this->client_repo = $client_repo;
-        $this->title = "Application Key";
-        $this->user_model = new User();
+        $this->label_model = new Label();
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = Auth::user();
-        $apps = $user->application;
-
-        $data = [
-            'title' => $this->title,
-            'apps' => $apps,
-            'breadcrumbs' => $this->breadcrumbs
-        ];
-        return view('application.key.key_list', $data);
     }
 
     /**
@@ -49,14 +33,16 @@ class ApplicationKeyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
+        $user = Auth::user();
+        $app = $user->application->find($id);
         $data = [
-            'title' => $this->title,
-            'breadcrumbs' => $this->breadcrumbs
-
+            'title' => 'Add Label ' . $app->client->name,
+            'breadcrumbs' => $this->breadcrumbs,
+            'method' => 'POST'
         ];
-        return view('application.key.key_form', $data);
+        return view('data.label.label_form', $data);
     }
 
     /**
@@ -65,28 +51,25 @@ class ApplicationKeyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        $rules = [
-            'redirect' => ['required', 'filled', "regex:/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$/"],
-            'app_name' => ['required', 'filled']
+        $user = Auth::user();
+        $app = $user->application->find($id);
+        $rules  = [
+            'label_name' =>  ['required', 'filled', 'unique:labels,label_name,NULL,id,app_id,' . $app->id . ',deleted_at,NULL']
         ];
-        $message = [
-            'redirect.regex' => "The redirect format is invalid. eg. Https://example.com"
-        ];
-        $validator = Validator::make($request->all(), $rules, $message);
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator->errors())->withInput();
         }
-        $user = Auth::user();
+
         try {
-            $res = $this->client_repo->create($user->id, $request->app_name, $request->redirect);
-            $app_data_insert = [
-                'user_id' => $res->user_id,
-                'client_id' => $res->id,
-                'created_at' => $res->created_at
+            $data_insert = [
+                'app_id' => $app->id,
+                'label_name' => $request->label_name,
+                'created_at' => new \DateTime
             ];
-            $res = $user->application()->insert($app_data_insert);
+            $res = $this->label_model->insert($data_insert);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [
@@ -95,9 +78,9 @@ class ApplicationKeyController extends Controller
             return redirect()->back()->with($response);
         }
         $response = [
-            'success' => "Application " . $request->app_name . " has been added"
+            'success' => "Success Add Label"
         ];
-        return redirect()->to('/application/key')->with($response);
+        return redirect()->back()->with($response);
     }
 
     /**
@@ -106,8 +89,24 @@ class ApplicationKeyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show($id = null)
     {
+
+        $user = Auth::user();
+        $apps = $user->application;
+        $app = $apps->find($id);
+        $labels = [];
+        if ($app) {
+            $labels = $app->label;
+        }
+        $data = [
+            'title' => "Label",
+            'breadcrumbs' => $this->breadcrumbs,
+            'labels' => $labels,
+            'apps' => $apps,
+            'app' => $app
+        ];
+        return view('data.label.label_list', $data);
     }
 
     /**
@@ -139,13 +138,20 @@ class ApplicationKeyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($app_id, $id)
     {
+
         $user = Auth::user();
-        $app = $user->application->find($id);
+        $app = $user->application->find($app_id);
+        $label = $app->label->find($id);
+        if (!$label) {
+            $response = [
+                'error' => "Label not Found"
+            ];
+            return redirect()->to('label/' . $app_id)->with($response);
+        }
         try {
-            $this->client_repo->delete($app->client);
-            $app->delete();
+            $label->delete();
         } catch (Exception $e) {
             Log::error($e->getMessage());
             $response = [
@@ -154,7 +160,7 @@ class ApplicationKeyController extends Controller
             return redirect()->back()->with($response);
         }
         $response = [
-            'success' => "Your app secret key has been revoked"
+            'success' => "Success Delete Label"
         ];
         return redirect()->back()->with($response);
     }

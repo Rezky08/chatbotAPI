@@ -24,26 +24,31 @@ class TelegramAccountController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $telegram_id = null, $id = null)
     {
         $user = Auth::user();
-        $apps = $user->application()->active();
+        $apps = $user->application;
         $app_ids = $apps->pluck('id')->toArray();
         $telegrams = $this->telegram_model->active($app_ids)->get();
-        if ($request->telegram_bot) {
-            $telegrams = $telegrams->where('id', $request->telegram_bot);
+        $telegram = null;
+        $accounts = [];
+        $account = null;
+        if ($telegram_id) {
+            $telegram = $telegrams->find($telegram_id);
         }
-        $telegram_ids = $telegrams->pluck('id')->toArray();
-        $accounts = $this->telegram_account_model->whereIn('telegram_id', $telegram_ids)->orderBy('telegram_id');
-        if ($request->telegram_account) {
-            $accounts = $accounts->where('id', $request->telegram_account);
+        if ($telegram) {
+            $accounts = $telegram->account;
         }
-        $accounts = $accounts->get();
+        if ($id) {
+            $account = $accounts->find($id);
+        }
         $data = [
             'title' => "Account",
             'breadcrumbs' => $this->breadcrumbs,
             'accounts' => $accounts,
-            'telegrams' => $telegrams
+            'account' => $account,
+            'telegrams' => $telegrams,
+            'telegram' => $telegram
         ];
         return view('telegram.account.account_list', $data);
     }
