@@ -16,12 +16,7 @@ class Application extends Model
     }
     public function client()
     {
-        return $this->hasOne(Client::class, 'id', 'client_id');
-    }
-
-    public function scopeActive()
-    {
-        return $this->with('client')->get()->where('revoke', 0);
+        return $this->hasOne(Client::class, 'id', 'client_id')->where('revoked', 0);
     }
 
     public function chat()
@@ -39,6 +34,10 @@ class Application extends Model
     }
     public function answer()
     {
-        return $this->hasMany(Question::class, 'app_id', 'id');
+        return $this->hasMany(Answer::class, 'app_id', 'id');
+    }
+    public function label()
+    {
+        return $this->hasMany(Label::class, 'app_id', 'id');
     }
 }
