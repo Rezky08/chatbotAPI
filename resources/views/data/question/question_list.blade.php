@@ -15,20 +15,41 @@
             <select name="searchbox" class="select2" style="width: 100%">
                 <option value=""></option>
                 @foreach ($apps as $key => $item)
-                    <option value="{{ $item->id }}">{{ $item->client->name }}</option>
+                    <option value="{{ $item->id }}" @if ($app)
+                        @if ($item->id == $app->id)
+                            selected
+                        @endif
+                @endif
+                >{{ $item->client->name }}</option>
                 @endforeach
             </select>
         </div>
         <div class="column is-offset-one-third is-one-third has-text-right">
             @if ($app)
-                <button class="button is-primary modal-button" data-target="modal">
-                    <span class="icon">
-                        <i class="fa fa-plus"></i>
-                    </span>
-                    <span>
-                        Import Question
-                    </span>
-                </button>
+                <div class="dropdown is-hoverable is-right">
+                    <div class="dropdown-trigger">
+                        <button class="button is-primary">
+                            <span class="icon">
+                                <i class="fa fa-plus"></i>
+                            </span>
+                            <span>
+                                Add Question
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-content">
+                            <a class="modal-button dropdown-item" data-target="modal">
+                                <span>Import File</span>
+                                <span class="icon has-text-primary"><i class="fa fa-file"></i></span>
+                            </a>
+                            <a href="{{ url(URL::current() . '/add') }}" class="dropdown-item">
+                                <span>Add Some Question</span>
+                                <span class="icon has-text-primary"><i class="fa fa-question" aria-hidden="true"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
     </div>
@@ -40,11 +61,11 @@
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Application Name</th>
-                        <th>Text</th>
-                        <th>Label</th>
-                        <th></th>
+                        <th width='5%'>No</th>
+                        <th width='20%'>Application Name</th>
+                        <th width='60%'>Text</th>
+                        <th width='10%'>Label</th>
+                        <th width='5%'></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,22 +74,30 @@
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $question->application->client->name }}</td>
                             <td>{{ $question->text }}</td>
-                            <td>{{ $question->label->name }}</td>
+                            <td>{{ $question->label->label_name }}</td>
                             <td>
-                                <form
-                                    action="{{ url('application/question/' . $question->application->id . '/' . $question->id) }}"
-                                    method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="button border-0" data-tooltip="Revoke Key">
-                                        <span class="icon is-small has-text-danger"><i class="fa fa-trash"></i></span>
-                                    </button>
-                                </form>
-                                <a class="button is-info">
-                                    <span class="icon">
-                                        <i class="fas fa-edit"></i>
-                                    </span>
-                                </a>
+                                <div class="columns is-vcentered">
+                                    <div class="column">
+                                        <form
+                                            action="{{ url('question/' . $question->application->id . '/' . $question->id) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="button border-0 has-tooltip-left"
+                                                data-tooltip="Delete Question">
+                                                <span class="icon is-small has-text-danger"><i
+                                                        class="fa fa-trash"></i></span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="column">
+                                        <a href="{{ url(URL::current() . '/' . $question->id . '/edit') }}">
+                                            <span class="icon has-text-info has-tooltip-left" data-tooltip="Edit Question">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -169,7 +198,6 @@
             let modal_close = document.querySelector('.modal-close');
             let modal_background = document.querySelector('.modal-close');
             modal_toggler.forEach((el) => {
-                console.log(el);
                 el.addEventListener('click', ($modal) => {
                     let modal_target = el.getAttribute('data-target');
                     document.querySelector('#' + modal_target).classList.add('is-active');

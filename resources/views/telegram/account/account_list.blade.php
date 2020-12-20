@@ -12,31 +12,35 @@
 
 @section('main')
 
-    <form action="" method="get" id="search" class="my-3">
-        <div class="columns">
-            <div class="column is-half">
-                <select name="telegram_bot" id="telegram-bot" style="width: 100%">
-                    <option value=""></option>
-                    @foreach ($telegrams as $key => $telegram)
-                        <option value="{{ $telegram->id }}" @if (Request::get('telegram_bot') == $telegram->id)
+    <div class="columns">
+        <div class="column is-half">
+            <select name="telegram_bot" id="telegram-bot" style="width: 100%">
+                <option value=""></option>
+                @foreach ($telegrams as $key => $item)
+                    <option value="{{ $item->id }}" @if ($telegram)
+
+                        @if ($telegram->id == $item->id)
                             selected
-                    @endif
-                    >{{ $telegram->name }} - {{ $telegram->username }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="column is-half">
-                <select name="telegram_account" id="telegram-account" style="width: 100%">
-                    <option value=""></option>
-                    @foreach ($accounts as $key => $account)
-                        <option value="{{ $account->id }}" @if (Request::get('telegram_account') == $account->id)
-                            selected
-                    @endif>{{ $account->name }} - {{ $account->username }}</option>
-                    @endforeach
-                </select>
-            </div>
+                        @endif
+                @endif
+                >{{ $item->name }} - {{ $item->username }}</option>
+                @endforeach
+            </select>
         </div>
-    </form>
+        {{-- <div class="column is-half">
+            <select name="telegram_account" id="telegram-account" style="width: 100%">
+                <option value=""></option>
+                @foreach ($accounts as $key => $item)
+                    <option value="{{ $item->id }}" @if ($account)
+
+                        @if ($account->id == $item->id)
+                            selected
+                        @endif
+                @endif>{{ $item->name }} - {{ $item->username }}</option>
+                @endforeach
+            </select>
+        </div> --}}
+    </div>
 
     {{-- table --}}
     <div class="box">
@@ -52,12 +56,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($accounts as $key => $account)
+                    @foreach ($accounts as $key => $item)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $account->name }}</td>
-                            <td>{{ $account->username }}</td>
-                            <td>{{ $account->telegram->name }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>{{ $item->username }}</td>
+                            <td>{{ $item->telegram->name }}</td>
                             <td>
                                 <button class="button is-info"><span class="icon"><i class="fa fa-comment"
                                             aria-hidden="true"></i></span><span>Chat Log</span></button>
@@ -135,6 +139,7 @@
     @parent
     <script>
         $(document).ready(function() {
+            let base_url = "{{ url('') }}";
             $('#telegram-bot').select2({
                 placeholder: "Select your telegram bot",
                 // allowClear
@@ -144,83 +149,16 @@
                 // allowClear
             });
             $('#telegram-bot').on('change', function() {
-                $('#search').submit();
+                window.location = base_url + "/telegram/account/" + $('#telegram-bot').val();
             });
             $('#telegram-account').on('change', function() {
-                $('#search').submit();
+                window.location = base_url + "/telegram/account/" + $('#telegram-bot').val() + '/' + $(
+                    '#telegram-account').val()
             });
             $('.select2-container').addClass('button');
             $('.select2-container').addClass('has-text-left');
             $('.select2-selection').addClass('border-0');
 
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            function getBotDetail() {
-                let bot_token = document.getElementById('bot_token').value
-                let requestOptions = {
-                    method: 'GET',
-                    redirect: 'follow'
-                };
-                let telegramAPI = "https://api.telegram.org/bot";
-                let urlTarget = telegramAPI + bot_token + "/getMe";
-
-                // async
-                (async () => {
-                    const resp = await fetch(urlTarget, requestOptions).then((data) => {
-                        return data.json();
-                    }).then((data) => {
-                        res = data['result'];
-                        document.getElementById('bot-name').innerHTML = res['first_name'];
-                        document.getElementById('bot-username').innerHTML = res['username'];
-                        document.getElementById('bot-token').innerHTML = bot_token;
-                        document.getElementById('token').value = bot_token;
-                        document.getElementById('name').value = res['first_name'];
-                        document.getElementById('username').value = res['username'];
-                        document.getElementById('form-bot').classList.add('is-hidden');
-                        document.getElementById('retrieve-info').classList.remove('is-hidden');
-                    }).catch((resp) => {
-                        message = resp.message;
-                        // console.log(resp.message);
-                        document.getElementById('bot_error').innerHTML = message;
-                        document.getElementById('bot_error').classList.remove('is-hidden');
-                    });
-                    document.getElementById('bot_search').classList.remove('is-loading');
-                    return resp;
-                })();
-                document.getElementById('bot_search').classList.add('is-loading');
-            }
-
-            function resetBotDetail() {
-                document.getElementById('bot_error').classList.add('is-hidden');
-                document.getElementById('bot_search').classList.remove('is-loading');
-                document.getElementById('bot-name').innerHTML = "";
-                document.getElementById('bot-username').innerHTML = "";
-                document.getElementById('bot-token').innerHTML = "";
-                document.getElementById('bot_token').value = "";
-                document.getElementById('token').value = "";
-                document.getElementById('name').value = "";
-                document.getElementById('username').value = "";
-                document.getElementById('form-bot').classList.remove('is-hidden');
-                document.getElementById('retrieve-info').classList.add('is-hidden');
-            }
-            document.getElementById('bot_search').addEventListener('click', () => {
-                getBotDetail();
-            });
-            let modal_toggler = document.querySelectorAll('.modal-button');
-            let modal_close = document.querySelector('.modal-close');
-            let modal_background = document.querySelector('.modal-close');
-            modal_toggler.forEach((el) => {
-                el.addEventListener('click', ($modal) => {
-                    let modal_target = el.getAttribute('data-target');
-                    document.querySelector('#' + modal_target).classList.add('is-active');
-                });
-
-            })
-            modal_close.addEventListener('click', () => {
-                modal_close.parentNode.classList.remove('is-active');
-                resetBotDetail();
-            });
         });
 
     </script>

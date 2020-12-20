@@ -12,31 +12,34 @@
 
 @section('main')
     {{-- search --}}
-    <form action="" method="get" id="search" class="my-3">
-        <div class="columns">
-            <div class="column is-half">
-                <select name="telegram_bot" id="telegram-bot" style="width: 100%">
-                    <option value=""></option>
-                    @foreach ($telegrams as $key => $telegram)
-                        <option value="{{ $telegram->id }}" @if (Request::get('telegram_bot') == $telegram->id)
+    <div class="columns">
+        <div class="column is-half">
+            <select name="telegram_bot" id="telegram-bot" style="width: 100%">
+                <option value=""></option>
+                @foreach ($telegrams as $key => $item)
+                    <option value="{{ $item->id }}" @if ($telegram)
+                        @if ($item->id == $telegram->id)
                             selected
-                    @endif
-                    >{{ $telegram->name }} - {{ $telegram->username }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="column is-half">
-                <select name="telegram_account" id="telegram-account" style="width: 100%">
-                    <option value=""></option>
-                    @foreach ($accounts as $key => $account)
-                        <option value="{{ $account->id }}" @if (Request::get('telegram_account') == $account->id)
-                            selected
-                    @endif>{{ $account->name }} - {{ $account->username }}</option>
-                    @endforeach
-                </select>
-            </div>
+                        @endif
+                @endif
+                >{{ $item->name }} - {{ $item->username }}</option>
+                @endforeach
+            </select>
         </div>
-    </form>
+        <div class="column is-half">
+            <select name="telegram_account" id="telegram-account" style="width: 100%">
+                <option value=""></option>
+                @foreach ($accounts as $key => $item)
+                    <option value="{{ $item->id }}" @if ($account)
+                        @if ($item->id == $account->id)
+                            selected
+                        @endif
+                @endif
+                >{{ $item->name }} - {{ $item->username }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
 
     {{-- table --}}
     <div class="box">
@@ -133,6 +136,7 @@
     @parent
     <script>
         $(document).ready(function() {
+            let base_url = "{{ url('') }}";
             $('#telegram-bot').select2({
                 placeholder: "Select your telegram bot",
                 // allowClear
@@ -142,10 +146,12 @@
                 // allowClear
             });
             $('#telegram-bot').on('change', function() {
-                $('#search').submit();
+                console.log(base_url);
+                window.location = base_url + '/telegram/chat/' + $('#telegram-bot').val();
             });
             $('#telegram-account').on('change', function() {
-                $('#search').submit();
+                window.location = base_url + '/telegram/chat/' + $('#telegram-bot').val() + '/' + $(
+                    '#telegram-account').val();
             });
             $('.select2-container').addClass('button');
             $('.select2-container').addClass('has-text-left');

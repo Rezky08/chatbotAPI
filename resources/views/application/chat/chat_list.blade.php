@@ -13,8 +13,13 @@
         <div class="column is-two-thirds">
             <select name="searchbox" class="select2" style="width: 100%">
                 <option value=""></option>
-                @foreach ($apps as $key => $app)
-                    <option value="{{ $app->id }}">{{ $app->client->name }}</option>
+                @foreach ($apps as $key => $item)
+                    <option value="{{ $item->id }}" @if ($app)
+                        @if ($item->id == $app->id)
+                            selected
+                        @endif
+                @endif
+                >{{ $item->client->name }}</option>
                 @endforeach
             </select>
         </div>

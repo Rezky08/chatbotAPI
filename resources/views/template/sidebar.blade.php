@@ -62,7 +62,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ url('/') }}">
+                <a href="{{ url('/answer') }}">
                     <span class="icon has-text-info">
                         <i class="fa fa-exclamation"></i>
                     </span>
@@ -70,7 +70,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ url('/') }}">
+                <a href="{{ url('/label') }}">
                     <span class="icon has-text-info">
                         <i class="fas fa-tag"></i>
                     </span>
