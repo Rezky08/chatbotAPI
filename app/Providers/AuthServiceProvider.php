@@ -27,6 +27,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Passport::routes();
+        Passport::tokensCan([
+            'application' => 'Manage Application'
+        ]);
         // Passport::useClientModel(User::class);
         //
     }
