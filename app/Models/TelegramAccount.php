@@ -10,6 +10,8 @@ class TelegramAccount extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'telegram_accounts';
+    public $relationship = ['telegram', 'chat'];
+
     public function chat()
     {
         return $this->hasMany(Chat::class, 'account_id', 'id');

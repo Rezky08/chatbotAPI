@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Telegram extends Model
 {
     use HasFactory, SoftDeletes;
+    public $relationship = ['application', 'account'];
 
     public function account()
     {

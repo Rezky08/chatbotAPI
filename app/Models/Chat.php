@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Chat extends Model
 {
     use HasFactory, SoftDeletes;
+    public $relationship = ['telegram', 'application'];
+
     public function application()
     {
         return $this->belongsTo(Application::class, 'app_id', 'id');

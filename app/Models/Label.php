@@ -10,6 +10,7 @@ class Label extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['label_name'];
+    public $relationship = ['application', 'question', 'answer'];
     public function application()
     {
         return $this->belongsTo(Application::class, 'app_id', 'id');

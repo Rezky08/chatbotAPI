@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TableColumn;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,7 +10,9 @@ use Laravel\Passport\Client;
 
 class Application extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, TableColumn;
+    public $relationship = ['user', 'client', 'chat', 'telegram', 'question', 'answer', 'label'];
+    protected $hidden = ['client_id'];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
