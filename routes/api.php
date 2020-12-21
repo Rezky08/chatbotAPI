@@ -24,3 +24,12 @@ Route::group(['middleware' => 'client'], function () {
 Route::group(['prefix' => 'token'], function () {
     Route::post('/', 'API\AuthController@store');
 });
+
+Route::group(['middleware' => ['client:application']], function () {
+    Route::group(['prefix' => 'question'], function () {
+        Route::get('/', 'API\QuestionController@index');
+    });
+    Route::group(['prefix' => 'answer'], function () {
+        Route::get('/', 'API\AnswerController@index');
+    });
+});

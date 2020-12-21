@@ -170,6 +170,7 @@ return [
         /*
          * Application Service Providers...
          */
+        App\Providers\APIModelServiceProvider::class,
         App\Providers\BreadcrumbServiceProvider::class,
         App\Providers\TelegramBotProvider::class,
         App\Providers\AppServiceProvider::class,
@@ -194,6 +195,7 @@ return [
     'aliases' => [
 
         'App' => Illuminate\Support\Facades\App::class,
+        'ApiModel' => App\Helpers\APIModel::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
