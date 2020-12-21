@@ -20,3 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'client'], function () {
     Route::get('/test', 'TesterController@index');
 });
+
+Route::group(['prefix' => 'token'], function () {
+    Route::post('/', 'API\AuthController@store');
+});
