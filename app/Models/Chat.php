@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\TableColumn;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Chat extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, TableColumn;
+    protected $hidden = ['client_id', 'deleted_at'];
+
     public $relationship = ['telegram', 'application'];
 
     public function application()

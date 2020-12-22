@@ -12,7 +12,8 @@ class Application extends Model
 {
     use HasFactory, SoftDeletes, TableColumn;
     public $relationship = ['user', 'client', 'chat', 'telegram', 'question', 'answer', 'label'];
-    protected $hidden = ['client_id'];
+    protected $hidden = ['client_id', 'deleted_at'];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

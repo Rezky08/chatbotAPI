@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\TableColumn;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TelegramAccount extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, TableColumn;
     protected $table = 'telegram_accounts';
     public $relationship = ['telegram', 'chat'];
+    protected $hidden = ['client_id', 'deleted_at'];
+
 
     public function chat()
     {

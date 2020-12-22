@@ -12,6 +12,8 @@ class Question extends Model
     use HasFactory, SoftDeletes, TableColumn;
     protected $fillable = ['text', 'app_id', 'label_id'];
     public $relationship = ['application', 'label'];
+    protected $hidden = ['client_id', 'deleted_at'];
+
 
     public function application()
     {

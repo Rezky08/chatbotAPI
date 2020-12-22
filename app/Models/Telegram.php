@@ -10,6 +10,8 @@ class Telegram extends Model
 {
     use HasFactory, SoftDeletes;
     public $relationship = ['application', 'account'];
+    protected $hidden = ['client_id', 'deleted_at'];
+
 
     public function account()
     {
