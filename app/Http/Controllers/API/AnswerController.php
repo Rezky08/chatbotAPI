@@ -73,7 +73,52 @@ class AnswerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $client_id = $request->get('oauth_client_id');
+        $app = $this->application_model->where('client_id', $client_id)->first();
+
+        $rules = [
+            'text' => ['required', 'filled', 'unique:answers,text,NULL,id,app_id,' . $app->id . ',deleted_at,NULL'],
+            'label_id' => ['filled', 'exists:labels,id,deleted_at,NULL'],
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $response = [
+                'ok' => false,
+                'message' => $validator->errors()->first()
+            ];
+            return response()->json($response, 400);
+        }
+
+        try {
+            $data_insert = [
+                'app_id' => $app->id,
+                'text' => $request->text,
+                'label_id' => $request->label_id,
+                'created_at' => new \DateTime
+            ];
+            $res = $this->answer_model->insert($data_insert);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            if (env('APP_DEBUG')) {
+                $response = [
+                    'ok' => false,
+                    'message' => $e->getMessage()
+                ];
+                return response()->json($response, 500);
+            } else {
+                $response = [
+                    'ok' => false,
+                    'message' => 'Server Internal Error 500'
+                ];
+                return response()->json($response, 500);
+            }
+        }
+        $response = [
+            'ok' => true,
+            'message' => 'success'
+        ];
+        return response()->json($response, 200);
     }
 
     /**

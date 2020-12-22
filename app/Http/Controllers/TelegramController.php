@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class TelegramController extends Controller
@@ -73,8 +74,8 @@ class TelegramController extends Controller
             return redirect()->back()->with($response);
         }
 
-        // $webhook = env('TELEGRAM_WEBHOOK') . $request->token;
-        $webhook = env('TELEGRAM_WEBHOOK');
+        $app = $user->application->find($request->app);
+        $webhook = env('TELEGRAM_WEBHOOK') . $app->client_id . '/' . $request->token;
         $stat_webhook = (new TelegramBot($request->token))->connectWebhook($webhook);
         if (!$stat_webhook) {
             $response = [

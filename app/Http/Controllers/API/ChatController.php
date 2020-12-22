@@ -5,20 +5,23 @@ namespace App\Http\Controllers\API;
 use App\Helpers\APIModel;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\Question;
+use App\Models\Chat;
+use App\Models\TelegramAccount;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class QuestionController extends Controller
+class ChatController extends Controller
 {
-    private $question_model;
+    private $chat_model;
     protected $application_model;
+    private $telegram_account_model;
     function __construct()
     {
         $this->application_model = new Application();
-        $this->question_model = new Question();
+        $this->chat_model = new Chat();
+        $this->telegram_account_model = new TelegramAccount();
     }
     /**
      * Display a listing of the resource.
@@ -44,10 +47,10 @@ class QuestionController extends Controller
         $base_cond = [
             'app_id' => $app->id
         ];
-        $api = new APIModel($this->question_model, $base_cond);
+        $api = new APIModel($this->chat_model, $base_cond);
 
         try {
-            $res = $api->get($request->all());
+            $res = $api->woGet($request->all())->applicationChat()->get();
         } catch (Exception $e) {
             Log::error($e->getMessage());
             if (env('APP_DEBUG')) {
@@ -73,12 +76,12 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
+
         $client_id = $request->get('oauth_client_id');
         $app = $this->application_model->where('client_id', $client_id)->first();
 
         $rules = [
-            'text' => ['required', 'filled', 'unique:questions,text,NULL,id,app_id,' . $app->id . ',deleted_at,NULL'],
-            'label_id' => ['filled', 'exists:labels,id,deleted_at,NULL'],
+            'text' => ['required', 'filled'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -93,10 +96,10 @@ class QuestionController extends Controller
             $data_insert = [
                 'app_id' => $app->id,
                 'text' => $request->text,
-                'label_id' => $request->label_id,
                 'created_at' => new \DateTime
             ];
-            $res = $this->question_model->insert($data_insert);
+
+            $res = $this->chat_model->insert($data_insert);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             if (env('APP_DEBUG')) {

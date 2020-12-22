@@ -5,20 +5,20 @@ namespace App\Http\Controllers\API;
 use App\Helpers\APIModel;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\Question;
+use App\Models\TelegramAccount;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class QuestionController extends Controller
+class TelegramAccountController extends Controller
 {
-    private $question_model;
+    private $telegram_account_model;
     protected $application_model;
     function __construct()
     {
         $this->application_model = new Application();
-        $this->question_model = new Question();
+        $this->telegram_account_model = new TelegramAccount();
     }
     /**
      * Display a listing of the resource.
@@ -31,7 +31,8 @@ class QuestionController extends Controller
         $app = $this->application_model->where('client_id', $client_id)->first();
 
         $rules = [
-            '*' => ['filled']
+            '*' => ['filled'],
+            'telegram_id' => ['required', 'filled', 'exists:telegrams,id,app_id,' . $app->id . ',deleted_at,NULL']
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -42,9 +43,9 @@ class QuestionController extends Controller
         }
 
         $base_cond = [
-            'app_id' => $app->id
+            'telegram_id' => $request->telegram_id
         ];
-        $api = new APIModel($this->question_model, $base_cond);
+        $api = new APIModel($this->telegram_account_model, $base_cond);
 
         try {
             $res = $api->get($request->all());
@@ -77,8 +78,11 @@ class QuestionController extends Controller
         $app = $this->application_model->where('client_id', $client_id)->first();
 
         $rules = [
-            'text' => ['required', 'filled', 'unique:questions,text,NULL,id,app_id,' . $app->id . ',deleted_at,NULL'],
-            'label_id' => ['filled', 'exists:labels,id,deleted_at,NULL'],
+            'telegram_id' => ['required', 'filled', 'exists:telegrams,id,deleted_at,NULL'],
+            'telegram_user_id' => ['required', 'filled', 'unique:telegram_accounts,telegram_user_id,NULL,id,telegram_id,' . $request->telegram_id . ',deleted_at,NULL'],
+            'first_name' => ['required', 'filled'],
+            'last_name' => ['required', 'filled'],
+            'username' => ['filled', 'unique:telegram_accounts,username,NULL,id,telegram_id,' . $request->telegram_id . ',deleted_at,NULL'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -91,12 +95,14 @@ class QuestionController extends Controller
 
         try {
             $data_insert = [
-                'app_id' => $app->id,
-                'text' => $request->text,
-                'label_id' => $request->label_id,
+                'telegram_id' => $request->telegram_id,
+                'telegram_user_id' => $request->telegram_user_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'username' => $request->username,
                 'created_at' => new \DateTime
             ];
-            $res = $this->question_model->insert($data_insert);
+            $res = $this->telegram_account_model->insert($data_insert);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             if (env('APP_DEBUG')) {

@@ -5,20 +5,26 @@ namespace App\Http\Controllers\API;
 use App\Helpers\APIModel;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\Question;
+use App\Models\Chat;
+use App\Models\Telegram;
+use App\Models\TelegramAccount;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class QuestionController extends Controller
+class TelegramChatController extends Controller
 {
-    private $question_model;
+    private $chat_model;
     protected $application_model;
+    private $telegram_account_model;
+    private $telegram_model;
     function __construct()
     {
         $this->application_model = new Application();
-        $this->question_model = new Question();
+        $this->chat_model = new Chat();
+        $this->telegram_model = new Telegram();
+        $this->telegram_account_model = new TelegramAccount();
     }
     /**
      * Display a listing of the resource.
@@ -44,10 +50,10 @@ class QuestionController extends Controller
         $base_cond = [
             'app_id' => $app->id
         ];
-        $api = new APIModel($this->question_model, $base_cond);
+        $api = new APIModel($this->chat_model, $base_cond);
 
         try {
-            $res = $api->get($request->all());
+            $res = $api->woGet($request->all())->telegramChat()->get();
         } catch (Exception $e) {
             Log::error($e->getMessage());
             if (env('APP_DEBUG')) {
@@ -71,32 +77,59 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $client_id, $telegram_bot_token)
     {
-        $client_id = $request->get('oauth_client_id');
-        $app = $this->application_model->where('client_id', $client_id)->first();
 
+        $request->request->add(['bot_token' => $telegram_bot_token]);
         $rules = [
-            'text' => ['required', 'filled', 'unique:questions,text,NULL,id,app_id,' . $app->id . ',deleted_at,NULL'],
-            'label_id' => ['filled', 'exists:labels,id,deleted_at,NULL'],
+            'bot_token' => ['required', 'filled', 'exists:telegrams,bot_token,deleted_at,NULL'],
+            'message.text' => ['required', 'filled'],
+            'message.from' => ['required', 'filled'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $response = [
-                'ok' => false,
                 'message' => $validator->errors()->first()
             ];
             return response()->json($response, 400);
         }
+        $app = $this->application_model->where('client_id', $client_id)->first();
+        if (!$app) {
+            $response = [
+                'message' => 'invalid Client Id'
+            ];
+            return response()->json($response, 400);
+        }
+        $telegram = $app->telegram->where('bot_token', $telegram_bot_token)->first();
+        if (!$telegram) {
+            $response = [
+                'message' => 'invalid Bot Token'
+            ];
+            return response()->json($response, 400);
+        }
 
+        // validate account
+        $account = $this->telegram_account_model->firstOrCreate(
+            [
+                'telegram_id' => $telegram->id,
+                'telegram_user_id' => $request->message['from']['id']
+            ],
+            [
+                'first_name' => $request->message['from']['first_name'],
+                'last_name' => $request->message['from']['last_name'],
+                'username' => $request->message['from']['username']
+            ]
+        );
+
+        // insert to db
         try {
             $data_insert = [
-                'app_id' => $app->id,
-                'text' => $request->text,
-                'label_id' => $request->label_id,
+                'account_id' => $account->id,
+                'app_id' => $telegram->application->id,
+                'text' => $request->message['text'],
                 'created_at' => new \DateTime
             ];
-            $res = $this->question_model->insert($data_insert);
+            $account->chat()->insert($data_insert);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             if (env('APP_DEBUG')) {
@@ -113,8 +146,8 @@ class QuestionController extends Controller
                 return response()->json($response, 500);
             }
         }
+
         $response = [
-            'ok' => true,
             'message' => 'success'
         ];
         return response()->json($response, 200);
