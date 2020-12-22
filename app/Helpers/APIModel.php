@@ -62,7 +62,7 @@ class APIModel
             $this->model_ins = $this->model_ins->with($rel);
         }
     }
-    public function get($request_in = [])
+    public function woGet($request_in = [])
     {
 
         $this->cond_columns = array_intersect_key($request_in, array_flip($this->table_columns));
@@ -90,6 +90,10 @@ class APIModel
                 }
             }
         }
-        return $this->model_ins->get();
+        return $this->model_ins;
+    }
+    public function get($request_in = [])
+    {
+        return $this->woGet($request_in)->get();
     }
 }
