@@ -13,7 +13,7 @@ class EngineServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        require_once app_path() . '\Helpers\Engine.php';
+        require_once app_path() . '/Helpers/Engine.php';
     }
 
     /**
