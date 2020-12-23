@@ -39,8 +39,8 @@ Route::group(['middleware' => ['client:application']], function () {
         Route::post('/', 'API\LabelController@store');
     });
     Route::group(['prefix' => 'chat'], function () {
-        Route::get('/', 'API\ChatController@index');
-        Route::post('/', 'API\ChatController@store');
+        Route::get('/', 'API\ApplicationChatController@index');
+        Route::post('/', 'API\ApplicationChatController@store');
     });
     Route::group(['prefix' => 'telegram'], function () {
         Route::group(['prefix' => 'chat'], function () {
