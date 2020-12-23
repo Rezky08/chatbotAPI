@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Helpers\APIModel;
+use App\Helpers\Engine;
+use App\Helpers\TelegramBot;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\Chat;
@@ -129,7 +131,8 @@ class TelegramChatController extends Controller
                 'text' => $request->message['text'],
                 'created_at' => new \DateTime
             ];
-            $account->chat()->insert($data_insert);
+            $chat_id = $account->chat()->insertGetId($data_insert);
+            $chat = $account->chat->find($chat_id);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             if (env('APP_DEBUG')) {
@@ -146,6 +149,14 @@ class TelegramChatController extends Controller
                 return response()->json($response, 500);
             }
         }
+
+        $res = (new Engine($app))->getAnswer($request->message['text']);
+        $sendReply = (new TelegramBot($telegram_bot_token))->sendMessage($res->message, $request->message['chat']['id']);
+        $chat->text_response = $res->message;
+        if ($sendReply) {
+            $chat->replied = true;
+        }
+        $chat->save();
 
         $response = [
             'message' => 'success'

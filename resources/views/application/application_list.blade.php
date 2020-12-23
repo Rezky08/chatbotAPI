@@ -2,7 +2,7 @@
 @section('main')
     <div class="columns">
         <div class="column is-offset-half has-text-right">
-            <a href="{{ url('/application/key/add') }}" class="button is-primary">
+            <a href="{{ url('/application/add') }}" class="button is-primary">
                 <span class="icon"><i class="fa fa-plus"></i></span><span>Add Application</span>
             </a>
         </div>
@@ -14,12 +14,12 @@
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Application Name</th>
-                        <th>Secret Key</th>
-                        <th>Redirect</th>
-                        <th>Key Created</th>
-                        <th></th>
+                        <th width="10%">No</th>
+                        <th width="25%">Application Name</th>
+                        <th width="15%">Secret Key</th>
+                        <th width="25%">Redirect</th>
+                        <th width="20%">Created</th>
+                        <th width="5%"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,13 +32,28 @@
                             <td>{{ $app->client->redirect }}</td>
                             <td>{{ $app->created_at }}</td>
                             <td>
-                                <form action="{{ url('application/key/' . $app->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="button border-0" data-tooltip="Revoke Key">
-                                        <span class="icon is-small has-text-danger"><i class="fa fa-trash"></i></span>
-                                    </button>
-                                </form>
+                                <div class="columns is-centered">
+                                    <div class="column">
+                                        <form action="{{ url('application/' . $app->id . '/train') }}" method="post">
+                                            @csrf
+                                            <button type="submit" class="button border-0" data-tooltip="Train Application">
+                                                <span class="icon is-small has-text-success">
+                                                    <i class="fas fa-feather-alt"></i>
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="column">
+                                        <form action="{{ url('application/' . $app->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="button border-0" data-tooltip="Revoke Key">
+                                                <span class="icon is-small has-text-danger"><i
+                                                        class="fa fa-trash"></i></span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

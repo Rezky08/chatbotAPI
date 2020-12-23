@@ -1,5 +1,16 @@
+@section('head')
+    @parent
+    <style>
+        .sticky {
+            position: sticky;
+            top: 30px;
+        }
+
+    </style>
+@endsection
+
 @section('sidebar')
-    <aside class="menu">
+    <div class="menu sticky">
         <ul class="menu-list">
             <li><a href="{{ url('/dashboard') }}">
                     <span class="icon has-text-info">
@@ -11,7 +22,7 @@
         <span class="menu-label">Application</span>
         <ul class="menu-list">
             <li>
-                <a href="{{ url('/application/key') }}">
+                <a href="{{ url('/application') }}">
                     <span class="icon has-text-info">
                         <i class="fas fa-key"></i>
                     </span>
@@ -78,5 +89,5 @@
                 </a>
             </li>
         </ul>
-    </aside>
+    </div>
 @endsection

@@ -30,12 +30,11 @@ Route::group(['middleware' => ['auth.redirect:web']], function () {
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', 'DashboardController@index');
     Route::group(['prefix' => 'application'], function () {
-        Route::group(['prefix' => 'key'], function () {
-            Route::get('/', 'ApplicationKeyController@index');
-            Route::delete('/{id}', 'ApplicationKeyController@destroy');
-            Route::get('/add', 'ApplicationKeyController@create');
-            Route::post('/add', 'ApplicationKeyController@store');
-        });
+        Route::get('/', 'ApplicationController@index');
+        Route::delete('/{id}', 'ApplicationController@destroy');
+        Route::get('/add', 'ApplicationController@create');
+        Route::post('/add', 'ApplicationController@store');
+        Route::post('/{id}/train', 'ApplicationTrainController@train');
         Route::group(['prefix' => 'chat'], function () {
             Route::get('/{id?}', 'ApplicationChatController@index');
         });

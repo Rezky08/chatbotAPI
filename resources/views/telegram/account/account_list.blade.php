@@ -63,8 +63,9 @@
                             <td>{{ $item->username }}</td>
                             <td>{{ $item->telegram->name }}</td>
                             <td>
-                                <button class="button is-info"><span class="icon"><i class="fa fa-comment"
-                                            aria-hidden="true"></i></span><span>Chat Log</span></button>
+                                <a href="{{ url('telegram/chat/' . $item->telegram->id . '/' . $item->id) }}"
+                                    class="button is-info"><span class="icon"><i class="fa fa-comment"
+                                            aria-hidden="true"></i></span><span>Chat Log</span></a>
                             </td>
                         </tr>
                     @endforeach

@@ -50,8 +50,7 @@
                         <th>No</th>
                         <th>App Name</th>
                         <th>Text</th>
-                        <th>Response</th>
-                        <th>Time Received</th>
+                        <th>replied</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -59,10 +58,21 @@
                     @foreach ($chats as $key => $chat)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $chat->application->client->name }}</td>
+                            <td id='app-name-{{ $key }}'>{{ $chat->application->client->name }}</td>
                             <td>{{ $chat->text }}</td>
-                            <td>{{ $chat->response }}</td>
-                            <td>{{ $chat->created_at }}</td>
+                            <td>
+                                @if ($chat->replied)
+                                    <span class="tag is-success">Yes</span>
+                                @else
+                                    <span class="tag is-danger">No</span>
+                                @endif
+                            </td>
+                            <td>
+                                <button class="button is-primary is-small modal-button" data-target="modal"
+                                    chat-id='{{ $key }}'>
+                                    <span>Detail</span>
+                                </button>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -77,53 +87,54 @@
             </div>
             <div class="modal-content is-clipped">
                 <div class="box">
-                    <span class="block has-text-rubik is-size-4 has-text-weight-semibold">Telegram Bot</span>
-                    <div id="form-bot">
-                        <div class="field my-3">
-                            <div class="control has-icons-left">
-                                <input type="text" class="input" name="bot_token" id="bot_token">
-                                <span class="icon is-left">
-                                    <i class="fas fa-key"></i>
-                                </span>
-                                <p class="help is-danger is-hidden" id="bot_error"></p>
-                            </div>
+                    <span class="has-text-rubik is-size-4 has-text-weight-semibold">Chat Detail</span>
+                    <div class="columns mt-3">
+                        <div class="column">
+                            <span class='has-text-weight-semibold'>From</span>
                         </div>
-                        <div class="block has-text-right">
-                            <button class="button is-primary" id="bot_search">Get Bot Info</button>
+                        <div class="column">
+                            <span id="detail-username"></span>
                         </div>
                     </div>
-                    <div class="is-hidden my-3" id="retrieve-info">
-                        <div class="columns">
-                            <div class="column is-one-third">
-                                <span class="is-size-6 has-text-weight-semibold">Bot Token </span>
-                            </div>
-                            <div class="column">
-                                <span id="bot-token"></span>
-                            </div>
+                    <div class="columns">
+                        <div class="column">
+                            <span class='has-text-weight-semibold'>Application Name</span>
                         </div>
-                        <div class="columns">
-                            <div class="column is-one-third">
-                                <span class="is-size-6 has-text-weight-semibold">Bot Name </span>
-                            </div>
-                            <div class="column">
-                                <span id="bot-name"></span>
-                            </div>
+                        <div class="column">
+                            <span id="detail-app-name"></span>
                         </div>
-                        <div class="columns">
-                            <div class="column is-one-third">
-                                <span class="is-size-6 has-text-weight-semibold">Bot Username </span>
-                            </div>
-                            <div class="column">
-                                <span id="bot-username"></span>
-                            </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column">
+                            <span class='has-text-weight-semibold'>Text</span>
                         </div>
-                        <form action="" method="POST">
-                            @csrf
-                            <input type="hidden" id="token" name="token">
-                            <input type="hidden" id="name" name="name">
-                            <input type="hidden" id="username" name="username">
-                            <button class="button is-primary is-fullwidth">Add Telegram Bot</button>
-                        </form>
+                        <div class="column">
+                            <span id="detail-text"></span>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column">
+                            <span class='has-text-weight-semibold'>Replied</span>
+                        </div>
+                        <div class="column">
+                            <span id="detail-replied"></span>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column">
+                            <span class='has-text-weight-semibold'>Response</span>
+                        </div>
+                        <div class="column">
+                            <span id="detail-text-response"></span>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column">
+                            <span class='has-text-weight-semibold'>Received Date</span>
+                        </div>
+                        <div class="column">
+                            <span id="detail-receive-date"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,7 +167,48 @@
             $('.select2-container').addClass('button');
             $('.select2-container').addClass('has-text-left');
             $('.select2-selection').addClass('border-0');
+        });
 
+        document.addEventListener('DOMContentLoaded', () => {
+            function changeChatDetail(id) {
+                let chat = data['chats'][id];
+                document.getElementById('detail-username').innerHTML = data['account']['username'];
+
+                document.getElementById('detail-app-name').innerHTML = document.getElementById('app-name-' + id)
+                    .innerText;
+
+                document.getElementById('detail-text').innerHTML = chat['text']
+
+                document.getElementById('detail-text-response').innerHTML = chat['text_response']
+
+                replied_html = ''
+                if (chat['replied']) {
+                    replied_html += '<span class="tag is-success">Yes</span>'
+                } else {
+                    replied_html += '<span class="tag is-danger">No</span>'
+                }
+                document.getElementById('detail-replied').innerHTML = replied_html
+
+                document.getElementById('detail-receive-date').innerHTML = chat['created_at']
+
+
+
+            }
+            let modal_toggler = document.querySelectorAll('.modal-button');
+            let modal_close = document.querySelector('.modal-close');
+            let modal_background = document.querySelector('.modal-close');
+            modal_toggler.forEach((el) => {
+                el.addEventListener('click', ($modal) => {
+                    let modal_target = el.getAttribute('data-target');
+                    let chat_id = el.getAttribute('chat-id');
+                    changeChatDetail(chat_id);
+                    document.querySelector('#' + modal_target).classList.add('is-active');
+                });
+
+            })
+            modal_close.addEventListener('click', () => {
+                modal_close.parentNode.classList.remove('is-active')
+            });
         });
 
     </script>

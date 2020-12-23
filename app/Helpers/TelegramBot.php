@@ -46,4 +46,20 @@ class TelegramBot
             return false;
         }
     }
+    public function sendMessage($text, $chat_id)
+    {
+        $url = env('TELEGRAM_API') . $this->bot_token . "/sendMessage";
+        $data = [
+            'chat_id' => $chat_id,
+            'text' => $text
+        ];
+        try {
+            $res = $this->client->get($url, ['query' => $data]);
+            $webhook_info = json_decode($res->getBody()->getContents());
+            return true;
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+    }
 }

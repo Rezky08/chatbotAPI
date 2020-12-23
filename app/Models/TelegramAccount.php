@@ -13,6 +13,7 @@ class TelegramAccount extends Model
     protected $table = 'telegram_accounts';
     public $relationship = ['telegram', 'chat'];
     protected $hidden = ['client_id', 'deleted_at'];
+    protected $fillable = ['telegram_id', 'telegram_user_id', 'first_name', 'last_name', 'username'];
 
 
     public function chat()

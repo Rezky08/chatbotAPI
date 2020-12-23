@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 
-class ApplicationKeyController extends Controller
+class ApplicationController extends Controller
 {
     private $user_model;
     private $title;
@@ -23,7 +23,7 @@ class ApplicationKeyController extends Controller
     {
         $this->breadcrumbs = (new Breadcrumb)->get($request->path());
         $this->client_repo = $client_repo;
-        $this->title = "Application Key";
+        $this->title = "Application";
         $this->user_model = new User();
     }
     /**
@@ -41,7 +41,7 @@ class ApplicationKeyController extends Controller
             'apps' => $apps,
             'breadcrumbs' => $this->breadcrumbs
         ];
-        return view('application.key.key_list', $data);
+        return view('application.application_list', $data);
     }
 
     /**
@@ -56,7 +56,7 @@ class ApplicationKeyController extends Controller
             'breadcrumbs' => $this->breadcrumbs
 
         ];
-        return view('application.key.key_form', $data);
+        return view('application.application_form', $data);
     }
 
     /**
@@ -97,7 +97,7 @@ class ApplicationKeyController extends Controller
         $response = [
             'success' => "Application " . $request->app_name . " has been added"
         ];
-        return redirect()->to('/application/key')->with($response);
+        return redirect()->to('/application')->with($response);
     }
 
     /**

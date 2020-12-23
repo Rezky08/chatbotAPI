@@ -14,7 +14,10 @@ class Question extends Model
     public $relationship = ['application', 'label'];
     protected $hidden = ['client_id', 'deleted_at'];
 
-
+    public function scopeLabeled()
+    {
+        return $this->where('label_id', '!=', NULL);
+    }
     public function application()
     {
         return $this->belongsTo(Application::class, 'app_id', 'id');

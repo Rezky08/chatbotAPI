@@ -72,6 +72,7 @@ class TelegramChatController extends Controller
             'account' => $account,
             'chats' => $chats
         ];
+        echo '<script>data=' . json_encode($data) . '</script>';
         return view('telegram.chat.chat_list', $data);
     }
 

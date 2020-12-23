@@ -74,7 +74,13 @@
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $answer->application->client->name }}</td>
                             <td>{{ $answer->text }}</td>
-                            <td>{{ $answer->label->label_name }}</td>
+                            <td>
+                                @if ($answer->label)
+                                    {{ $answer->label->label_name }}
+                                @else
+                                    <span class="has-text-grey is-italic has-text-weight-semibold">not Labeled</span>
+                                @endif
+                            </td>
                             <td>
                                 <div class="columns is-vcentered">
                                     <div class="column">
