@@ -120,7 +120,7 @@ class QuestionController extends Controller
     public function bulkStore(Request $request, $id)
     {
         $rules = [
-            'question_file' => ['required', 'filled', 'file', 'mimes:xlsx,xls,txt'],
+            'question_file' => ['required', 'filled', 'file', 'mimes:xlsx,xls,txt,csv'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
