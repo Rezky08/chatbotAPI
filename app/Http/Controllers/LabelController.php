@@ -136,9 +136,33 @@ class LabelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $app_id, $id)
     {
-        //
+        $user = Auth::user();
+        $app = $user->application->find($app_id);
+        $rules  = [
+            'label_name' =>  ['required', 'filled', 'unique:labels,label_name,' . $id . ',id,app_id,' . $app->id . ',deleted_at,NULL']
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator->errors())->withInput();
+        }
+
+        try {
+            $label = $this->label_model->find($id);
+            $label->label_name = $request->label_name;
+            $label->save();
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            $response = [
+                'error' => "Internal Server Error 500"
+            ];
+            return redirect()->back()->with($response);
+        }
+        $response = [
+            'success' => "Success Update Label"
+        ];
+        return redirect()->back()->with($response);
     }
 
     /**
