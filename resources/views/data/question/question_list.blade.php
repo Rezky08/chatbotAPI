@@ -24,33 +24,48 @@
                 @endforeach
             </select>
         </div>
-        <div class="column is-offset-one-third is-one-third has-text-right">
-            @if ($app)
-                <div class="dropdown is-hoverable is-right">
-                    <div class="dropdown-trigger">
-                        <button class="button is-primary">
-                            <span class="icon">
-                                <i class="fa fa-plus"></i>
-                            </span>
-                            <span>
-                                Add Question
-                            </span>
-                        </button>
-                    </div>
-                    <div class="dropdown-menu">
-                        <div class="dropdown-content">
-                            <a class="modal-button dropdown-item" data-target="modal">
-                                <span>Import File</span>
-                                <span class="icon has-text-primary"><i class="fa fa-file"></i></span>
-                            </a>
-                            <a href="{{ url(URL::current() . '/add') }}" class="dropdown-item">
-                                <span>Add Some Question</span>
-                                <span class="icon has-text-primary"><i class="fa fa-question" aria-hidden="true"></i></span>
-                            </a>
+        <div class="column is-two-thirds has-text-right">
+            <div class="buttons is-right">
+
+                @if ($app)
+
+                    <a href="{{ url('question/' . $app->id . '/preprocessing') }}" class="button is-primary is-inverted">
+                        <span class="icon tag is-primary px-4">AbC</span>
+                        <span>Get Preprocessing</span>
+                    </a>
+                    <a href="{{ url('question/' . $app->id . '/export') }}" class="button is-info is-outlined">
+                        <span class="icon">
+                            <i class="fas fa-file-excel"></i>
+                        </span>
+                        <span>Export To Excell</span>
+                    </a>
+                    <div class="dropdown is-hoverable is-right">
+                        <div class="dropdown-trigger">
+                            <button class="button is-primary">
+                                <span class="icon">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                <span>
+                                    Add Question
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-content">
+                                <a class="modal-button dropdown-item" data-target="modal">
+                                    <span>Import File</span>
+                                    <span class="icon has-text-primary"><i class="fa fa-file"></i></span>
+                                </a>
+                                <a href="{{ url(URL::current() . '/add') }}" class="dropdown-item">
+                                    <span>Add Some Question</span>
+                                    <span class="icon has-text-primary"><i class="fa fa-question"
+                                            aria-hidden="true"></i></span>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 
@@ -63,7 +78,8 @@
                     <tr>
                         <th width='5%'>No</th>
                         <th width='20%'>Application Name</th>
-                        <th width='60%'>Text</th>
+                        <th width='30%'>Text</th>
+                        <th width='30%'>Preprocessed</th>
                         <th width='10%'>Label</th>
                         <th width='5%'></th>
                     </tr>
@@ -74,6 +90,7 @@
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $question->application->client->name }}</td>
                             <td>{{ $question->text }}</td>
+                            <td>{{ $question->preprocessed }}</td>
                             <td>
                                 @if ($question->label)
                                     {{ $question->label->label_name }}

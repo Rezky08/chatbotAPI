@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\QuestionExport;
 use App\Helpers\Breadcrumb;
+use App\Helpers\Engine;
 use App\Imports\QuestionImport;
 use App\Models\Question;
 use Exception;
@@ -92,6 +94,13 @@ class QuestionController extends Controller
         return redirect()->back()->with($response);
     }
 
+    public function export($id)
+    {
+        $user = Auth::user();
+        $app = $user->application->find($id);
+        return Excel::download(new QuestionExport($id), $app->client->name . ".xlsx");
+    }
+
     /**
      * Display the specified resource.
      *
@@ -145,6 +154,42 @@ class QuestionController extends Controller
             'success' => "Success Import Data"
         ];
         return redirect()->back()->with($response);
+    }
+
+    public function preprocessing($id)
+    {
+        $user = Auth::user();
+        $app = $user->application->find($id);
+        if (!$app) {
+            return redirect('/question');
+        }
+
+        $engine = new Engine($app);
+        $res = $engine->getTextPreprocessed();
+        if (!$res) {
+            $response = [
+                'error' => "Cannot get Text Preprocessed"
+            ];
+            return redirect('/question')->with($response);
+        }
+        $data = $res['message'];
+        try {
+            foreach ($data as $item) {
+                $question = $this->question_model->find($item->id);
+                $question->preprocessed = $item->text;
+                $question->save();
+            }
+            $response = [
+                'success' => "Success Get Text Preprocessed"
+            ];
+            return redirect('question/' . $id)->with($response);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            $response = [
+                'error' => "Internal Server Error 500"
+            ];
+            return redirect()->back()->with($response);
+        }
     }
 
     /**

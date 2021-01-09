@@ -20,6 +20,9 @@ class QuestionImport implements ToCollection, WithHeadingRow
     public function collection(Collection $row)
     {
         foreach ($row as $row) {
+            if (!$row['text']) {
+                continue;
+            }
             $label = $this->app->label()->firstOrCreate(
                 ['label_name' => $row['label']],
                 [

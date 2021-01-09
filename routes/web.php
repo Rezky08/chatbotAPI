@@ -53,6 +53,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'question'], function () {
         Route::get('/{id?}', 'QuestionController@show');
         Route::post('/{id}/bulk', 'QuestionController@bulkStore');
+        Route::get('/{id}/preprocessing', 'QuestionController@preprocessing');
+        Route::get('/{id}/export', 'QuestionController@export');
         Route::get('/{id}/add', 'QuestionController@create');
         Route::post('/{id}/add', 'QuestionController@store');
         Route::get('/{id}/{q_id}/edit', 'QuestionController@edit');
@@ -72,6 +74,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{id?}', 'LabelController@show');
         Route::get('/{id}/add', 'LabelController@create');
         Route::post('/{id}/add', 'LabelController@store');
+        Route::get('/{id}/{l_id}/edit', 'LabelController@edit');
         Route::delete('/{id}/{l_id}', 'LabelController@destroy');
     });
 });

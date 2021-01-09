@@ -156,6 +156,9 @@
                 placeholder: "Select your telegram account",
                 // allowClear
             });
+            $('.select2-container').addClass('button');
+            $('.select2-container').addClass('has-text-left');
+            $('.select2-selection').addClass('border-0');
             $('#telegram-bot').on('change', function() {
                 console.log(base_url);
                 window.location = base_url + '/telegram/chat/' + $('#telegram-bot').val();
@@ -164,9 +167,6 @@
                 window.location = base_url + '/telegram/chat/' + $('#telegram-bot').val() + '/' + $(
                     '#telegram-account').val();
             });
-            $('.select2-container').addClass('button');
-            $('.select2-container').addClass('has-text-left');
-            $('.select2-selection').addClass('border-0');
         });
 
         document.addEventListener('DOMContentLoaded', () => {

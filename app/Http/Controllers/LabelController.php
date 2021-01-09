@@ -115,9 +115,18 @@ class LabelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($app_id, $id)
     {
-        //
+        $user = Auth::user();
+        $app = $user->application->find($app_id);
+        $label = $app->label->find($id);
+        $data = [
+            'title' => 'Add Label ' . $app->client->name,
+            'breadcrumbs' => $this->breadcrumbs,
+            'method' => 'PUT',
+            'label' => $label
+        ];
+        return view('data.label.label_form', $data);
     }
 
     /**

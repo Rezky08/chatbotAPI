@@ -122,4 +122,44 @@ class Engine
 
         return $response;
     }
+
+    public function getTextPreprocessed()
+    {
+        $data = [
+            'token' => env('APP_KEY'),
+            'questions' => $this->app->question->toArray()
+        ];
+        try {
+            try {
+                $url = env('ENGINE_API') . 'text_preprocessing';
+                $res = $this->client->post($url, ['json' => $data, 'headers' => $this->headers]);
+                $response = $res->getBody()->getContents();
+                $response = json_decode($response);
+                $res = collect($response)->values()->first();
+                $response = [
+                    'ok' => true,
+                    'message' => collect($res)
+                ];
+            } catch (ClientException $e) {
+                $res = $e->getResponse();
+                $responseBodyAsString = $res->getBody()->getContents();
+                if ($res->getStatusCode() == 400) {
+                    Log::error($responseBodyAsString);
+                    $response = json_decode($responseBodyAsString);
+                    $res = collect($response)->values()->first();
+                    $response = [
+                        'ok' => false,
+                        'message' => collect($res)->first()
+                    ];
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+
+        return $response;
+    }
 }
