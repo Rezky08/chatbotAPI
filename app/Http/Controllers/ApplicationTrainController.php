@@ -30,9 +30,9 @@ class ApplicationTrainController extends Controller
         $engine = new Engine($app);
         $data_prep = $engine->dataPrep();
         $res = $engine->train($data_prep);
-        if (!$res['ok']) {
+        if (!$res) {
             $response = [
-                'error' => $res['message']
+                'error' => "Server Error 500"
             ];
             return redirect()->back()->with($response);
         }

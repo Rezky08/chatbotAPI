@@ -36,10 +36,21 @@ class Engine
 
         ];
         $questions = $this->app->question->where('label_id', '!=', null);
+        $questions = $questions->filter(function ($item) {
+            if ($item->label) {
+                return $item;
+            }
+        });
         $answers = $this->app->answer->where('label_id', '!=', null);
+        $answers = $answers->filter(function ($item) {
+            if ($item->label) {
+                return $item;
+            }
+        });
+
 
         $labels = $this->app->label;
-        $questions->map(function ($item) use (&$data) {
+        $questions->filter(function ($item) use (&$data) {
             $data['questions'][] = [
                 'text'  => $item->text,
                 'label' => $item->label->label_name
