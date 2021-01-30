@@ -14,7 +14,7 @@
         <div class="navbar-menu" id="navbarBasicExample">
             <div class="navbar-end is-hidden-desktop">
                 <div class="navbar-item">
-                    <a href="{{ url('/profile') }}" class="navbar-item">Profile</a>
+                    {{-- <a href="{{ url('/profile') }}" class="navbar-item">Profile</a> --}}
                     <a href="{{ url('/logout') }}" class="navbar-item">
                         <span>
                             <i class="fas fa-sign-out"></i>
@@ -30,8 +30,8 @@
                         </span>
                         <div class="dropdown-menu">
                             <div class="dropdown-content">
-                                <a href="{{ url('/profile') }}" class="dropdown-item">Profile</a>
-                                <hr class="dropdown-divider">
+                                {{-- <a href="{{ url('/profile') }}" class="dropdown-item">Profile</a> --}}
+                                {{-- <hr class="dropdown-divider"> --}}
                                 <a href="{{ url('/logout') }}" class="dropdown-item">
                                     <span>
                                         <i class="fas fa-sign-out"></i>
