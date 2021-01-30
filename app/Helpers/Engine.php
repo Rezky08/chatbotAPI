@@ -49,15 +49,14 @@ class Engine
         });
 
 
-        $labels = $this->app->label;
         $questions->filter(function ($item) use (&$data) {
             $data['questions'][] = [
                 'text'  => $item->text,
                 'label' => $item->label->label_name
             ];
-            $data['labels'][] = [
-                'name' => $item->label->label_name
-            ];
+            // $data['labels'][] = [
+            //     'name' => $item->label->label_name
+            // ];
         });
         $answers->map(function ($item) use (&$data) {
             $data['answers'][] = [
@@ -65,7 +64,12 @@ class Engine
                 'label' => $item->label->label_name
             ];
         });
-        $data['labels'] = collect($data['labels'])->unique('name')->values()->toArray();
+        $labels = $this->app->label;
+        $labels->map(function ($item) use (&$data) {
+            $data['labels'][] = [
+                'name' => $item->label_name
+            ];
+        });
         // $labels->map(function ($item) use (&$data) {
         //     $data['labels'][] = [
         //         'name' => $item->label_name
