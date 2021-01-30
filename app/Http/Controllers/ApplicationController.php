@@ -34,12 +34,13 @@ class ApplicationController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $apps = $user->application;
+        $apps = $user->application()->paginate();
 
         $data = [
             'title' => $this->title,
             'apps' => $apps,
-            'breadcrumbs' => $this->breadcrumbs
+            'breadcrumbs' => $this->breadcrumbs,
+            'number' => $apps ? $apps->firstItem() : 0
         ];
         return view('application.application_list', $data);
     }

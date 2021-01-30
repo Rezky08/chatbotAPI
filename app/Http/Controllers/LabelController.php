@@ -97,14 +97,15 @@ class LabelController extends Controller
         $app = $apps->find($id);
         $labels = [];
         if ($app) {
-            $labels = $app->label;
+            $labels = $app->label()->paginate();
         }
         $data = [
             'title' => "Label",
             'breadcrumbs' => $this->breadcrumbs,
             'labels' => $labels,
             'apps' => $apps,
-            'app' => $app
+            'app' => $app,
+            'number' => $labels ? $labels->firstItem() : 0
         ];
         return view('data.label.label_list', $data);
     }

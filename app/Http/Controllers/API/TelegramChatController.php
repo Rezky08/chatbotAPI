@@ -110,17 +110,20 @@ class TelegramChatController extends Controller
             return response()->json($response, 400);
         }
 
+        $telegram_account_columns = $this->telegram_account_model->getTableColumns();
+        $excluded = ['id'];
+        $only_same = array_intersect_key($request->message['from'], array_flip($telegram_account_columns));
+        $only_same = array_diff_key($only_same, array_flip($excluded));
+
+        $account_data = $only_same;
+
         // validate account
         $account = $this->telegram_account_model->firstOrCreate(
             [
                 'telegram_id' => $telegram->id,
                 'telegram_user_id' => $request->message['from']['id']
             ],
-            [
-                'first_name' => $request->message['from']['first_name'],
-                'last_name' => $request->message['from']['last_name'],
-                'username' => $request->message['from']['username']
-            ]
+            $account_data
         );
 
         // insert to db

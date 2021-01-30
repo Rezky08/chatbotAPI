@@ -40,6 +40,7 @@ class TelegramChatController extends Controller
         }
         if ($telegram_id) {
             $telegram = $telegrams->find($telegram_id);
+            $chats = $telegram->chat()->paginate();
             if ($telegram) {
                 $accounts = $telegram->account;
             } else {
@@ -58,7 +59,7 @@ class TelegramChatController extends Controller
                     ];
                     return redirect()->to('telegram/chat')->with($response);
                 } else {
-                    $chats = $account->chat;
+                    $chats = $account->chat()->paginate();
                 }
             }
         }
@@ -70,7 +71,8 @@ class TelegramChatController extends Controller
             'telegram' => $telegram,
             'accounts' => $accounts,
             'account' => $account,
-            'chats' => $chats
+            'chats' => $chats,
+            'number' => $chats ? $chats->firstItem() : 0
         ];
         echo '<script>data=' . json_encode($data) . '</script>';
         return view('telegram.chat.chat_list', $data);

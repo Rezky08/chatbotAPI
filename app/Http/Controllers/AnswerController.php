@@ -105,14 +105,15 @@ class AnswerController extends Controller
         $app = $apps->find($id);
         $answers = [];
         if ($app) {
-            $answers = $app->answer;
+            $answers = $app->answer()->paginate(15);
         }
         $data = [
             'title' => "Answer",
             'breadcrumbs' => $this->breadcrumbs,
             'answers' => $answers,
             'apps' => $apps,
-            'app' => $app
+            'app' => $app,
+            'number' => $answers ? $answers->firstItem() : 0
         ];
         return view('data.answer.answer_list', $data);
     }

@@ -30,7 +30,7 @@ class ApplicationChatController extends Controller
         if ($id) {
             $app = $apps->find($id);
             if ($app) {
-                $chats = $app->chat()->applicationChat()->get();
+                $chats = $app->chat()->applicationChat()->paginate();
             } else {
                 $response = [
                     'error' => 'Cannot find your application'
@@ -38,12 +38,15 @@ class ApplicationChatController extends Controller
                 return redirect()->to('application/chat')->with($response);
             }
         }
+
+
         $data = [
             'title' => 'Application Chat',
             'breadcrumbs' => $this->breadcrumbs,
             'chats' => $chats,
             'apps' => $apps,
-            'app' => $app
+            'app' => $app,
+            'number' => $chats ? $chats->firstItem() : 0
         ];
         return view('application.chat.chat_list', $data);
     }

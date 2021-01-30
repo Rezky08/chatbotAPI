@@ -114,14 +114,15 @@ class QuestionController extends Controller
         $app = $apps->find($id);
         $questions = [];
         if ($app) {
-            $questions = $app->question;
+            $questions = $app->question()->paginate();
         }
         $data = [
             'title' => "Question",
             'breadcrumbs' => $this->breadcrumbs,
             'questions' => $questions,
             'apps' => $apps,
-            'app' => $app
+            'app' => $app,
+            'number' => $questions ? $questions->firstItem() : 0
         ];
         return view('data.question.question_list', $data);
     }

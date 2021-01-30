@@ -29,14 +29,14 @@ class TelegramController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $telegrams = $user->telegram()->paginate();
         $apps = $user->application;
-        $app_ids = $apps->pluck('id')->toArray();
-        $telegrams = $this->telegram_model->active($app_ids)->get();
         $data = [
             'title' => "Telegram",
             'telegrams' => $telegrams,
-            'apps' => $apps,
-            'breadcrumbs' => $this->breadcrumbs
+            'breadcrumbs' => $this->breadcrumbs,
+            'number' => $telegrams ? $telegrams->firstItem() : 0,
+            'apps' => $apps
         ];
         return view('telegram.bot.bot_list', $data);
     }

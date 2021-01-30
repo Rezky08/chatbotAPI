@@ -37,7 +37,7 @@ class TelegramAccountController extends Controller
             $telegram = $telegrams->find($telegram_id);
         }
         if ($telegram) {
-            $accounts = $telegram->account;
+            $accounts = $telegram->account()->paginate();
         }
         if ($id) {
             $account = $accounts->find($id);
@@ -48,7 +48,8 @@ class TelegramAccountController extends Controller
             'accounts' => $accounts,
             'account' => $account,
             'telegrams' => $telegrams,
-            'telegram' => $telegram
+            'telegram' => $telegram,
+            'number' => $accounts ? $accounts->firstItem() : 0
         ];
         return view('telegram.account.account_list', $data);
     }
