@@ -34,7 +34,7 @@
                 <tbody>
                     @foreach ($telegrams as $key => $telegram)
                         <tr>
-                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $number }}</td>
                             <td>{{ $telegram->application->client->name }}</td>
                             <td>{{ $telegram->name }}</td>
                             <td>{{ $telegram->username }}</td>
@@ -53,6 +53,9 @@
                 </tbody>
             </table>
         </div>
+        @if ($telegrams)
+            <x-pagination :paginator="$telegrams"></x-pagination>
+        @endif
     </div>
 
     {{-- modal --}}

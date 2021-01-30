@@ -18,10 +18,8 @@
                 <option value=""></option>
                 @foreach ($telegrams as $key => $item)
                     <option value="{{ $item->id }}" @if ($telegram)
-
-                        @if ($telegram->id == $item->id)
-                            selected
-                        @endif
+                        @if ($telegram->id==$item->id)
+                        selected @endif
                 @endif
                 >{{ $item->name }} - {{ $item->username }}</option>
                 @endforeach
@@ -58,7 +56,7 @@
                 <tbody>
                     @foreach ($accounts as $key => $item)
                         <tr>
-                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $number++ }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->username }}</td>
                             <td>{{ $item->telegram->name }}</td>
@@ -72,6 +70,10 @@
                 </tbody>
             </table>
         </div>
+        @if ($accounts)
+
+            <x-pagination :paginator="$accounts"></x-pagination>
+        @endif
     </div>
 
     {{-- modal --}}

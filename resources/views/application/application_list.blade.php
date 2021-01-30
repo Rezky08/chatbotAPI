@@ -25,10 +25,10 @@
                 <tbody>
                     @foreach ($apps as $key => $app)
                         <tr>
-                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $number++ }}</td>
                             <td>{{ $app->client->name }}</td>
-                            <td><button class="button modal-button is-small is-info" secret-key="{{ $app->client->secret }}"
-                                    data-target="modal"> Show </button></td>
+                            <td><button class="button modal-button is-small is-info"
+                                    secret-key="{{ $app->client->secret }}" data-target="modal"> Show </button></td>
                             <td>{{ $app->client->redirect }}</td>
                             <td>{{ $app->created_at }}</td>
                             <td>
@@ -60,6 +60,9 @@
                 </tbody>
             </table>
         </div>
+        @if ($apps)
+            <x-pagination :paginator="$apps"></x-pagination>
+        @endif
     </div>
 
     {{-- modal --}}
