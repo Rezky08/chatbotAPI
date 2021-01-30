@@ -32,6 +32,10 @@ class Application extends Model
     {
         return $this->hasMany(Telegram::class, 'app_id', 'id');
     }
+    public function telegram_account()
+    {
+        return $this->hasManyThrough(TelegramAccount::class, Telegram::class, 'app_id', 'telegram_id', 'id', 'id');
+    }
     public function question()
     {
         return $this->hasMany(Question::class, 'app_id', 'id');

@@ -25,4 +25,8 @@ class Telegram extends Model
     {
         return $this->whereIn('app_id', $app_ids);
     }
+    public function chat()
+    {
+        return $this->hasManyThrough(Chat::class, TelegramAccount::class, 'telegram_id', 'account_id', 'id', 'id');
+    }
 }

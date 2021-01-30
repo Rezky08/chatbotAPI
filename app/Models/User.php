@@ -50,4 +50,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Application::class, 'user_id', 'id');
     }
+    public function telegram()
+    {
+        return $this->hasManyThrough(Telegram::class, Application::class, 'user_id', 'app_id', 'id', 'id');
+    }
 }
