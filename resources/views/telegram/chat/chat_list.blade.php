@@ -173,7 +173,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             function changeChatDetail(id) {
-                let chat = data['chats'][id];
+                let chat = data['chats']['data'][id];
+
                 document.getElementById('detail-username').innerHTML = data['account']['username'];
 
                 document.getElementById('detail-app-name').innerHTML = document.getElementById('app-name-' + id)

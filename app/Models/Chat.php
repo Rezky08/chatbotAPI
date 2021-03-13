@@ -13,6 +13,7 @@ class Chat extends Model
     protected $hidden = ['client_id', 'deleted_at'];
 
     public $relationship = ['telegram', 'application'];
+    protected $fillable = ['text', 'text_response', 'replied'];
 
     public function application()
     {

@@ -26,6 +26,9 @@ Route::group(['prefix' => 'token'], function () {
 });
 
 Route::group(['middleware' => ['client:application']], function () {
+    Route::group(['prefix' => 'chatbot'], function () {
+        Route::get('/', 'API\ChatbotResponseController@index');
+    });
     Route::group(['prefix' => 'question'], function () {
         Route::get('/', 'API\QuestionController@index');
         Route::post('/', 'API\QuestionController@store');
