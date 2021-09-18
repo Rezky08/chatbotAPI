@@ -125,6 +125,7 @@ class TelegramChatController extends Controller
             ],
             $account_data
         );
+        dump($account);
 
         // insert to db
         try {
@@ -155,6 +156,7 @@ class TelegramChatController extends Controller
 
         $res = (new Engine($app))->getAnswer($request->message['text']);
         $sendReply = (new TelegramBot($telegram_bot_token))->sendMessage($res->message, $request->message['chat']['id']);
+
         $chat->text_response = $res->message;
         if ($sendReply) {
             $chat->replied = true;
