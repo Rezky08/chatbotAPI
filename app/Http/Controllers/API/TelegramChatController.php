@@ -121,11 +121,10 @@ class TelegramChatController extends Controller
         $account = $this->telegram_account_model->firstOrCreate(
             [
                 'telegram_id' => $telegram->id,
-                'telegram_user_id' => $request->message['from']['id']
+                'telegram_user_id' => $request->message['from'] ?? ['id']
             ],
             $account_data
         );
-        Log::debug($request);
 
         // insert to db
         try {
