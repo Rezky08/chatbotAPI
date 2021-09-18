@@ -125,7 +125,7 @@ class TelegramChatController extends Controller
             ],
             $account_data
         );
-        dump($account);
+        Log::debug($request);
 
         // insert to db
         try {
